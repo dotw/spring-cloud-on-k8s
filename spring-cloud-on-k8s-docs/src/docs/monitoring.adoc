@@ -1,0 +1,7 @@
+== Monitoring ==
+
+=== Prometheus ===
+
+There are plugins to automatically detect new services, deployed on Kubernetes and change the configuration to start scraping the metrics endpoints.
+
+Prerequisite: Spring Boot 2.0 with Micrometer

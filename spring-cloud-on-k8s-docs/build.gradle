@@ -1,0 +1,58 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.asciidoctor:asciidoctorj-diagram:1.5.4.1'
+        // Do not use the latest Gradle Plugin: https://github.com/spring-projects/spring-restdocs/issues/438
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
+    }
+}
+
+plugins {
+    id "org.asciidoctor.convert" version "1.5.3"
+    id 'com.github.jruby-gradle.base' version '1.4.0'
+}
+apply plugin: 'org.asciidoctor.convert'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    gems 'rubygems:asciidoctor-diagram:1.5.5'
+}
+
+asciidoctorj {
+    version = '1.5.5'
+}
+
+asciidoctor {
+    // configure source and output files and folders
+    sourceDir = file('src/docs')
+    sources {
+        include 'index.adoc'
+    }
+    outputDir = file('build/docs')
+    // good to see what the build is doing...
+    logDocuments = true
+    dependsOn jrubyPrepare
+    requires = ['asciidoctor-diagram', 'asciidoctor-diagram/plantuml']
+    gemPath = jrubyPrepare.outputDir
+    separateOutputDirs = false
+    attributes \
+        'build-gradle': file('build.gradle'),
+            'source-highlighter' : 'coderay',
+            'imagesdir': 'images',
+            'toc': 'left',
+            'icons': 'font',
+            'setanchors': '',
+            'idprefix': '',
+            'idseparator': '-',
+            'docinfo1': ''
+}
+
+defaultTasks 'asciidoctor'
+

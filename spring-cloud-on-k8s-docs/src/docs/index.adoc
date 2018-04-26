@@ -1,0 +1,37 @@
+= Spring Cloud on Kubernetes =
+ifndef::imagesdir[:imagesdir: images]
+
+include::overview.adoc[]
+
+include::containerization.adoc[]
+
+include::kubernetes.adoc[]
+
+include::deployment.adoc[]
+
+include::service-discovery-registration.adoc[]
+
+include::circuit-breaker.adoc[]
+
+include::monitoring.adoc[]
+
+include::references.adoc[]
+
+
+== PlantUML Test ==
+TODO: Remove later
+
+plantuml, "diagram-classes",png
+....
+class BlockProcessor
+class DiagramBlock
+class DitaaBlock
+class PlantUmlBlock
+
+BlockProcessor <|-- DiagramBlock
+DiagramBlock <|-- DitaaBlock
+DiagramBlock <|-- PlantUmlBlock
+....
+
+
+

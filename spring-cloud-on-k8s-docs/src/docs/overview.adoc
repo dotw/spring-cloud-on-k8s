@@ -1,0 +1,34 @@
+== Overview ==
+ifndef::imagesdir[:imagesdir: images]
+
+Moving a Spring Boot application, which heavily uses the Spring Cloud features around the Netflix OSS project, to
+Kubernetes (K8s) is challenging because of the many overlaps and the various ways certain features can be implemented
+in Kubernetes.
+
+There is a project in Spring Cloud incubation, called Spring-Cloud-Kubernetes, which tackles a few of those issues,
+but unfortunately it does not cover Istio yet. Istio is aiming to takeover more of the Spring Cloud Netflix topics,
+mplementing them in a technology agnostic way.
+
+The Spring Cloud Kubernetes project does some assumptions, like all applications are in the same K8s namespace, which
+might not be true in a more complex K8s setup.
+
+=== Feature Overlap ===
+
+The following table nicely shows the overlap between the Spring Cloud and Kubernetes.
+
+image::screen-shot-2016-12-06-at-10-30-08-679x1024.png[Y,300,200]
+
+After looking at some of the pros and cons the article suggests the following usage:
+
+image::spring-cloud-and-kubernetes-mixed-page-1.png[X,650,500]
+
+Bringing Istio to the stage adds more features to the table and Istio takes over more of them.
+
+TODO: Add
+
+* Circuit Breaker: Hystrix - Istio
+* Rate Limiting: Istio
+* Security Ingress: Istio
+* Security Egress: Istio
+*
+* ...

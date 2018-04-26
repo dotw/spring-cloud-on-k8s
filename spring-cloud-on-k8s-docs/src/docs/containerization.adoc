@@ -1,0 +1,46 @@
+== Containerization ==
+
+Docker is the standard container technology supported by Kubernetes and is on top of the hype curve at the moment.
+From a microservice DevOps team perspective however, dealing with the Docker containers is far below the value
+line. There is absolutely no need to mess around with Docker, it does not add any value from an end-user perspective.
+Therefore the Docker container creation process needs to be standardized on a technology level. That means there
+should be standard containers for certain technology stacks with only a minimal set of configuration options:
+
+* Java
+** Spring Boot
+** WebSphere Liberty Profile (Jakarta EE)
+* NodeJS
+* .NET
+* ...
+
+=== Java ===
+
+Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
+needs to be activated explicitly.
+
+The only options that must be modified are:
+* Heap Settings
+* ...
+
+
+* TODO: See manifest.mf from Cloud Foundry for a list of properties that can be configured there
+
+==== Spring Boot ====
+
+==== WebSphere Liberty profile (Jakarta EE) ====
+
+
+
+
+=== Open Issues ===
+
+
+TODO:
+*  Configuring the Readiness and Liveness probes
+** http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html
+** https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+** Open Issues
+*** Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
+extra endpoint because the service might be operational, i.e. live, but not ready yet.
+
+

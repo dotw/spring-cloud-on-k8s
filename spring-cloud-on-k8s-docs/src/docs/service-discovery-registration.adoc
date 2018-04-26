@@ -1,0 +1,12 @@
+== Service Registration & Discovery ==
+
+The service registration makes sure that each microservice registers its contact information in a central registry.
+A microservice A consuming a microervice B, contacts the service registry and asks for the contact details of service
+B. It gets a list of instances with its IP address and the port number.
+On K8s the port is the same in each Docker container and the IP is a private IP ....
+On Kubernetes there is no need for a Netflix Eureka anymore.
+The load-balancing is done by the K8s services, which do a load-balancing between the pods, representing the instances
+of an application.
+
+
+The project

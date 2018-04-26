@@ -1,0 +1,4 @@
+== Circuit Breaker ==
+
+TODO:
+Get rid of Hystrix and turn to Istio for this purpose

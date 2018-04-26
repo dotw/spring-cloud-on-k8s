@@ -1,0 +1,6 @@
+rootProject.name = 'spring-cloud-on-k8s'
+
+include 'spring-cloud-on-k8s-docs'
+include 'spring-cloud-on-k8s-bank-server'
+include 'spring-cloud-on-k8s-bank-client'
+include 'spring-cloud-on-k8s-bank-infrastructure'

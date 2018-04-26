@@ -1,0 +1,4 @@
+== Kubernetes ==
+
+K8s Initializers can attach a service mesh automatically:
+https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md

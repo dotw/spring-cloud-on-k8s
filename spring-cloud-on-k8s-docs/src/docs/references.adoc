@@ -1,0 +1,12 @@
+== References ==
+
+* Spring Cloud for Microservices Compared to Kubernetes (12/09/2016, Bilgin Ibryam)
+https://developers.redhat.com/blog/2016/12/09/spring-cloud-for-microservices-compared-to-kubernetes/
+
+* Spring Cloud Kubernetes (Incubation)
+
+* RedHat OpenShift
+
+* https://spring.fabric8.io[Fabric8]
+** https://github.com/fabric8io/kubeflix[kubeflix]
+** https://github.com/spring-cloud-incubator/spring-cloud-kubernetes[spring-cloud-kubernetes@Incubator] (previously https://github.com/fabric8io/spring-cloud-kubernetes[spring-cloud-kubernetes@fabric8io])
