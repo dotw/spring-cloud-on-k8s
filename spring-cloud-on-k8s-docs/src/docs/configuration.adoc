@@ -1,0 +1,3 @@
+== Configuration ==
+
+TODO: Only ConfigMaps are added to the PropertySource of a Spring Boot application, nothing else will change.
