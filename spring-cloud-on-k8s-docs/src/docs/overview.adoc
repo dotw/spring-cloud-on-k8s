@@ -16,7 +16,7 @@ might not be true in a more complex K8s setup.
 
 The following table shows some of the overlaps between the Spring Cloud and Kubernetes with Istio.
 
-image::SpringCloud-Kubernetes-Istio.png[Sunset]
+image::SpringCloud-Kubernetes-Istio.png[Spring Cloud - Kubernetes & Istio]
 The table borrows heavily from the RedHat developer article
 https://developers.redhat.com/blog/2016/12/09/spring-cloud-for-microservices-compared-to-kubernetes/[Spring Cloud for Microservices Compared to Kubernetes]
 which does not cover Istio because the publishing date of the article pre-dates the Istio release by almost six months.
