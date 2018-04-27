@@ -1,21 +1,29 @@
 == Containerization ==
-Docker is the standard container technology supported by Kubernetes and is on top of the hype curve at the moment.
-From a microservice DevOps team perspective however, dealing with the Docker containers is far below the value
-line. There is absolutely no need to mess around with Docker, it does not add any value to the application from an
-end-user perspective.
-Therefore the Docker container creation process needs to be standardized on a technology level. That means there
-should be standard containers for certain technology stacks with only a minimal set of configuration options:
+Docker is the standard container technology supported by Kubernetes and provides the basis for a standardized
+application deployment.
+However, from a microservice DevOps team perspective, dealing with Docker does not add any value to the
+application from an end-user perspective. The idea is therefore to hide the container technology from the normal
+developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
+require a completely different container setup than for the existing technologies. Such explorative applications
+will probably not be supported in the same way as the established technology stacks.
+
+The following stacks are quite popular in enterprises today:
 
 * Java
+** Jakarta EE (e.g. WebSphere Liberty Profile)
 ** Spring Boot
-** WebSphere Liberty Profile (Jakarta EE)
 * NodeJS
 * .NET
 * ...
 
+For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
+functionality to production.
+
+=== Configuration ===
 Each technology requires different hooks into the container creation process. For example, in Java the max heap
 settings must be configured by the team that is responsible for the microservice, following a DevOps approach.
 
+TODO: All applications should follow the 12-factor approach to allow configuration via environment variables
 
 === Conventions ===
 With Docker the TCP port of a microservice is not an issue to be discovered anymore (see chapter on containerization).

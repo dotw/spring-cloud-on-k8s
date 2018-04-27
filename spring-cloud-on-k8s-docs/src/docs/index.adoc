@@ -24,20 +24,3 @@ include::chaos-engineering.adoc[]
 include::references.adoc[]
 
 
-== PlantUML Test ==
-TODO: Remove later
-
-plantuml, "diagram-classes",png
-....
-class BlockProcessor
-class DiagramBlock
-class DitaaBlock
-class PlantUmlBlock
-
-BlockProcessor <|-- DiagramBlock
-DiagramBlock <|-- DitaaBlock
-DiagramBlock <|-- PlantUmlBlock
-....
-
-
-

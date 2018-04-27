@@ -531,6 +531,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#containerization">Containerization</a>
 <ul class="sectlevel2">
+<li><a href="#configuration">Configuration</a></li>
 <li><a href="#conventions">Conventions</a></li>
 <li><a href="#java">Java</a></li>
 <li><a href="#open-issues">Open Issues</a></li>
@@ -553,6 +554,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#monitoring">Monitoring</a>
 <ul class="sectlevel2">
 <li><a href="#prometheus">Prometheus</a></li>
+<li><a href="#opentracing">OpenTracing</a></li>
 </ul>
 </li>
 <li><a href="#security">Security</a></li>
@@ -562,7 +564,6 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#references">References</a></li>
-<li><a href="#plantuml-test">PlantUML Test</a></li>
 </ul>
 </div>
 </div>
@@ -587,52 +588,24 @@ might not be true in a more complex K8s setup.</p>
 <div class="sect2">
 <h3 id="feature-overlap">Feature Overlap</h3>
 <div class="paragraph">
-<p>The following table nicely shows the overlap between the Spring Cloud and Kubernetes.</p>
+<p>The following table shows some of the overlaps between the Spring Cloud and Kubernetes with Istio.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/screen-shot-2016-12-06-at-10-30-08-679x1024.png" alt="Y" width="300" height="200">
+<img src="images/SpringCloud-Kubernetes-Istio.png" alt="Sunset">
 </div>
 </div>
 <div class="paragraph">
-<p>After looking at some of the pros and cons the article suggests the following usage:</p>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="images/spring-cloud-and-kubernetes-mixed-page-1.png" alt="X" width="650" height="500">
-</div>
-</div>
-<div class="paragraph">
-<p>Bringing Istio to the stage adds more features to the table and Istio takes over more of them.</p>
-</div>
-<div class="paragraph">
-<p>TODO: Extend the tables with Istio</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Circuit Breaker: Hystrix - Istio</p>
-</li>
-<li>
-<p>Rate Limiting: Istio</p>
-</li>
-<li>
-<p>Security Ingress: Istio</p>
-</li>
-<li>
-<p>Security Egress: Istio</p>
-</li>
-<li>
-<p>&#8230;&#8203;</p>
-</li>
-</ul>
+<p>The table borrows heavily from the RedHat developer article
+<a href="https://developers.redhat.com/blog/2016/12/09/spring-cloud-for-microservices-compared-to-kubernetes/">Spring Cloud for Microservices Compared to Kubernetes</a>
+which does not cover Istio because the publishing date of the article pre-dates the Istio release by almost six months.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="migration-path">Migration Path</h3>
 <div class="paragraph">
 <p>A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
-ago (Many of the Netflix OSS libraries have been made publicly available in 2012/2013 and were adopted by the Spring
+ago (Many of the Netflix OSS libraries have been made publicly available in 2012 and were adopted by the Spring
 team in the following years).
 In the light of hybrid clouds and the polyglot workloads that are supported on those cloud environments, the focus on
 Java feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for all kinds
@@ -650,12 +623,16 @@ from platform aspects, leading to cleaner code.</p>
 <h2 id="containerization">Containerization</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Docker is the standard container technology supported by Kubernetes and is on top of the hype curve at the moment.
-From a microservice DevOps team perspective however, dealing with the Docker containers is far below the value
-line. There is absolutely no need to mess around with Docker, it does not add any value to the application from an
-end-user perspective.
-Therefore the Docker container creation process needs to be standardized on a technology level. That means there
-should be standard containers for certain technology stacks with only a minimal set of configuration options:</p>
+<p>Docker is the standard container technology supported by Kubernetes and provides the basis for a standardized
+application deployment.
+However, from a microservice DevOps team perspective, dealing with Docker does not add any value to the
+application from an end-user perspective. The idea is therefore to hide the container technology from the normal
+developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
+require a completely different container setup than for the existing technologies. Such explorative applications
+will probably not be supported in the same way as the established technology stacks.</p>
+</div>
+<div class="paragraph">
+<p>The following stacks are quite popular in enterprises today:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -664,10 +641,10 @@ should be standard containers for certain technology stacks with only a minimal 
 <div class="ulist">
 <ul>
 <li>
-<p>Spring Boot</p>
+<p>Jakarta EE (e.g. WebSphere Liberty Profile)</p>
 </li>
 <li>
-<p>WebSphere Liberty Profile (Jakarta EE)</p>
+<p>Spring Boot</p>
 </li>
 </ul>
 </div>
@@ -684,8 +661,18 @@ should be standard containers for certain technology stacks with only a minimal 
 </ul>
 </div>
 <div class="paragraph">
+<p>For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
+functionality to production.</p>
+</div>
+<div class="sect2">
+<h3 id="configuration">Configuration</h3>
+<div class="paragraph">
 <p>Each technology requires different hooks into the container creation process. For example, in Java the max heap
 settings must be configured by the team that is responsible for the microservice, following a DevOps approach.</p>
+</div>
+<div class="paragraph">
+<p>TODO: All applications should follow the 12-factor approach to allow configuration via environment variables</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="conventions">Conventions</h3>
@@ -773,7 +760,10 @@ extra endpoint because the service might be operational, i.e. live, but not read
 <p>Canary</p>
 </li>
 <li>
-<p>Blue Green Deployments
+<p>Blue Green Deployments</p>
+</li>
+<li>
+<p>Dark Launch
 *</p>
 </li>
 <li>
@@ -1003,6 +993,12 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 <p>Prerequisite: Spring Boot 2.0 with Micrometer</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="opentracing">OpenTracing</h3>
+<div class="paragraph">
+<p>TODO: Istio also supports OpenTracing!</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1071,37 +1067,27 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 </ul>
 </div>
 </li>
+<li>
+<p>Istio<br></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Introduction: <a href="https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/" class="bare">https://developers.redhat.com/books/introducing-istio-service-mesh-microservices/</a></p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
 </ul>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="plantuml-test">PlantUML Test</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>TODO: Remove later</p>
-</div>
-<div class="paragraph">
-<p>plantuml, "diagram-classes",png</p>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>class BlockProcessor
-class DiagramBlock
-class DitaaBlock
-class PlantUmlBlock
-
-BlockProcessor &lt;|-- DiagramBlock
-DiagramBlock &lt;|-- DitaaBlock
-DiagramBlock &lt;|-- PlantUmlBlock</pre>
-</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-27 11:44:11 CEST
+Last updated 2018-04-27 12:13:43 CEST
 </div>
 </div>
 </body>
