@@ -1,12 +1,82 @@
 == Service Registration & Discovery ==
 
-The service registration makes sure that each microservice registers its contact information in a central registry.
-A microservice A consuming a microervice B, contacts the service registry and asks for the contact details of service
-B. It gets a list of instances with its IP address and the port number.
-On K8s the port is the same in each Docker container and the IP is a private IP ....
-On Kubernetes there is no need for a Netflix Eureka anymore.
-The load-balancing is done by the K8s services, which do a load-balancing between the pods, representing the instances
-of an application.
+Service registration makes sure that each microservice registers its contact information in a central registry.
+A microservice MS-A, consuming a microservice MS-B, contacts the service registry and asks for the contact details
+of MS-B. It gets a list of IP addresses and port numbers on which the microservice MS-B instances receive
+incoming requests.
 
+On Kubernetes there is no need for Netflix Eureka anymore. Each microservice is deployed into 1 or more pods. For each
+pod there is a service which does the load-balancing from the central point of contact to the instances, living in the
+pods. Combined with KubeDNS, the microservice can be reached by its name, without any Java infrastructure code or
+library.
 
-The project
+=== Migration Path ===
+Switching from Netflix Eureka based service discovery to the Kubernetes is a multi-stage process as it is impossible
+in a larger microservice setup to migrate all microservices in one step.
+
+. All microservices register at Netflix Eureka +
+This makes sure that all microservices, which do not use the K8s DNS lookup yet are able to find its peers.
+. Additionally each microservice is made available via a K8s service and its `spring.application.name` in DNS +
+Microservices, using the new approach use a simple HTTP URL to access the microservice.
+
+=== Per Instance Access ===
+For some use-cases, going through the service load-balancer to a microservice instance is not an option.
+Those use-cases are:
+
+* Performing an action on each instance of a service
+* Retrieving information from all instances of a service
+
+NOTE: During a transition phase the Hystrix streams are still relevant. When the circuit-breaker becomes an aspect
+of the underlying infrastructure, accessing the Hystrix streams with the Turbine aggregator is not necessary
+anymore.
+
+=== Service Registration ===
+
+The future registration method, i.e. using Kube DNS only, does not require anything on the application side.
+Instead, the DNS setup must be done as part of the K8s deployment process of an application.
+During the transition period the discovery client for Netflix Eureka registration is still active
+in the microservices to let "old" Spring Cloud microservices, find each other.
+
+=== Service Discovery ===
+A microservice can be reached by using a hostname
+
+   <service-name>.<namespace>.<domain-suffix>
+
+Where
+
+* service-name -- is the name of the microservice as used by the K8s deployment descriptor
+* namespace -- is the namespace the microservice lives in
+* domain-suffix -- is a configurable suffix, defined by the K8s cluster
+
+An example hostname looks like this:
+
+   backend-service.default.svc.cluster.local
+
+`backend-service` is the name of the service, `default` is the namespace in which the service lives, and
+`svc.cluster.local`is the domain suffix.
+
+With Docker the port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+Using conventions each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
+Hazelcast is involved, port 5701 will be used.
+
+=== Feign ===
+Feign, is a declarative REST client framework. It incorporates Netflix Ribbon and Hystrix. Ribbon is the client
+side load-balancing library with pluggable load-balancing algorithms, like 'round-robin' or 'response-time'.
+
+When using Feign as a declarative REST client, the following approach could be taken to migrate from the Spring
+Cloud / Netflix OSS world to Kubernetes:
+
+=== Migration Steps ===
+
+TODO: Define the exact steps
+
+. Add the spring-cloud-kubernetes discovery client as a dependency to perform a lookup via the DNS name instead of
+the list of Eureka defined instances. Does https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery[spring-cloud-kubernetes-discovery]
+work with Feign? Which namespace name is used? Can this be configured?
+. Disable Hystrix: `spring.cloud.circuit.breaker.enabled=false`
+. Disable Ribbon: `ribbon.eureka.enabled`
+. Use the url parameter in the @FeignClient annotation
+. Convert Feign to using RestTemplate (no API JARs) or Spring Web MVC (using API JARs)
+. Remove dependencies to Ribbon, Feign and Hystrix
+
+NOTE: Load-balancing is covered in depth in the chapter <<load-balancing.adoc>>

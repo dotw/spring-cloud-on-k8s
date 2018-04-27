@@ -1,0 +1,3 @@
+== Load Balancing ==
+Load-Balancing in Kubernetes is defined by multiple factors.
+There is no load balancer in Kubernetes itself. Instead, when creating an

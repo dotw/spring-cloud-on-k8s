@@ -13,6 +13,12 @@ should be standard containers for certain technology stacks with only a minimal 
 * .NET
 * ...
 
+On K8s the port is the same in each Docker container and the IP is a private IP ....
+With Docker the port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+Using conventions each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
+Hazelcast is involved, port 5701 will be used.
+
+
 === Java ===
 
 Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
@@ -36,6 +42,7 @@ The only options that must be modified are:
 
 
 TODO:
+
 *  Configuring the Readiness and Liveness probes
 ** http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html
 ** https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/

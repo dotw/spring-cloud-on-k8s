@@ -11,6 +11,8 @@ include::deployment.adoc[]
 
 include::service-discovery-registration.adoc[]
 
+include::load-balancing.adoc[]
+
 include::circuit-breaker.adoc[]
 
 include::monitoring.adoc[]
