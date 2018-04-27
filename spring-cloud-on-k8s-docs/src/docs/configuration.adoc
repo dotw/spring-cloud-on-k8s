@@ -1,3 +1,16 @@
 == Configuration ==
+The way to configure microservices does not really change for Spring Boot / Spring Cloud applications.
+The
 
 TODO: Only ConfigMaps are added to the PropertySource of a Spring Boot application, nothing else will change.
+
+=== Migration Path ===
+
+TODO
+
+. Switch from Eureka first to Config-Server first approach
+. Align the configuration
+
+=== Open Issues ===
+
+TODO: How to handle

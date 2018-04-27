@@ -79,4 +79,4 @@ work with Feign? Which namespace name is used? Can this be configured?
 . Convert Feign to using RestTemplate (no API JARs) or Spring Web MVC (using API JARs)
 . Remove dependencies to Ribbon, Feign and Hystrix
 
-NOTE: Load-balancing is covered in depth in the chapter <<load-balancing.adoc>>
+NOTE: Load-balancing is covered in depth in the chapter <<Load Balancing>>

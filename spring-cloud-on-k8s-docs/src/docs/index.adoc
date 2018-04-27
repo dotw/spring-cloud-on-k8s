@@ -17,6 +17,10 @@ include::circuit-breaker.adoc[]
 
 include::monitoring.adoc[]
 
+include::security.adoc[]
+
+include::chaos-engineering.adoc[]
+
 include::references.adoc[]
 
 

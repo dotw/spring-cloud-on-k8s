@@ -1,3 +1,12 @@
 == Load Balancing ==
 Load-Balancing in Kubernetes is defined by multiple factors.
-There is no load balancer in Kubernetes itself. Instead, when creating an
+There is no load balancer in Kubernetes itself. Instead, when creating a service of type LoadBalancer, a cloud
+provider's load-balancer is provisioned as the Kubernetes service.
+This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
+configuration AWS' Elastic Load Balancer is completely different to Azure, IBM, or the Google load
+balancers.
+
+TODO:
+
+* Ribbon
+* Client side load-balancing with Istio

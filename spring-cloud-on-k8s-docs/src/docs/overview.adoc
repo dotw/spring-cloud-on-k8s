@@ -24,21 +24,20 @@ image::spring-cloud-and-kubernetes-mixed-page-1.png[X,650,500]
 
 Bringing Istio to the stage adds more features to the table and Istio takes over more of them.
 
-TODO: Add
+TODO: Extend the tables with Istio
 
 * Circuit Breaker: Hystrix - Istio
 * Rate Limiting: Istio
 * Security Ingress: Istio
 * Security Egress: Istio
-*
 * ...
 
 === Migration Path ===
 
 A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
-ago (Many of the Netflix OSS libraries have been made publicly available in 2013 and adopted by the Spring team
-in the following years).
-In the light of hybrid clouds and the polyglot workloads that is supported on those cloud environments, the focus on
+ago (Many of the Netflix OSS libraries have been made publicly available in 2012/2013 and were adopted by the Spring
+team in the following years).
+In the light of hybrid clouds and the polyglot workloads that are supported on those cloud environments, the focus on
 Java feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for all kinds
 of applications.
 

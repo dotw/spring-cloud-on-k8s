@@ -1,8 +1,8 @@
 == Containerization ==
-
 Docker is the standard container technology supported by Kubernetes and is on top of the hype curve at the moment.
 From a microservice DevOps team perspective however, dealing with the Docker containers is far below the value
-line. There is absolutely no need to mess around with Docker, it does not add any value from an end-user perspective.
+line. There is absolutely no need to mess around with Docker, it does not add any value to the application from an
+end-user perspective.
 Therefore the Docker container creation process needs to be standardized on a technology level. That means there
 should be standard containers for certain technology stacks with only a minimal set of configuration options:
 
@@ -13,25 +13,26 @@ should be standard containers for certain technology stacks with only a minimal 
 * .NET
 * ...
 
-On K8s the port is the same in each Docker container and the IP is a private IP ....
-With Docker the port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
-Using conventions each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
-Hazelcast is involved, port 5701 will be used.
+Each technology requires different hooks into the container creation process. For example, in Java the max heap
+settings must be configured by the team that is responsible for the microservice, following a DevOps approach.
+
+
+=== Conventions ===
+With Docker the TCP port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+By using conventions, each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
+Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
+container and thus can use the full range of TCP ports.
 
 
 === Java ===
-
 Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
 needs to be activated explicitly.
 
-The only options that must be modified are:
-* Heap Settings
-* ...
-
-
-* TODO: See manifest.mf from Cloud Foundry for a list of properties that can be configured there
-
 ==== Spring Boot ====
+
+Spring Boot applications are quite easy to containerize. The hooks into the container
+
+*
 
 ==== WebSphere Liberty profile (Jakarta EE) ====
 
@@ -49,5 +50,4 @@ TODO:
 ** Open Issues
 *** Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
 extra endpoint because the service might be operational, i.e. live, but not ready yet.
-
-
+* Check what can be configured in Cloud Foundry's manifest.mf to derive the configuration hooks

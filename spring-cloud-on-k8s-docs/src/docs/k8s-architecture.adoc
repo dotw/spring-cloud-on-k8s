@@ -1,7 +1,8 @@
 == Kubernetes Architecture ==
 
 TODO
-* Namespaces per environment
-* Multiple environments in one cluster
+
+* Namespaces per environment (test, staging, prod, ...)
+* One or more environments in one cluster
 * Multiple clusters communicating with each other
 * Using Istio to prevent microservices from calling each other

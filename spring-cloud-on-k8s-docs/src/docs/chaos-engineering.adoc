@@ -1,0 +1,13 @@
+== Chaos Engineering ==
+
+TODO
+
+* TroubleMaker
+* Chaos Monkey for Spring Boot +
+https://codecentric.github.io/chaos-monkey-spring-boot/
+* Istio
+
+=== Open Issues ===
+
+* What to support on which level? Does it make sense to mix Chaos Monkey for Spring Boot and Istio?
+

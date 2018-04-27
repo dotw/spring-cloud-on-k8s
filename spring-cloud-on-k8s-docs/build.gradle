@@ -56,3 +56,7 @@ asciidoctor {
 
 defaultTasks 'asciidoctor'
 
+task copyDocsDir(type: Copy) {
+    from "${buildDir}/docs"
+    into "${buildDir}/../../docs"
+}
