@@ -526,20 +526,39 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#overview">Overview</a>
 <ul class="sectlevel2">
 <li><a href="#feature-overlap">Feature Overlap</a></li>
+<li><a href="#migration-path">Migration Path</a></li>
 </ul>
 </li>
 <li><a href="#containerization">Containerization</a>
 <ul class="sectlevel2">
+<li><a href="#conventions">Conventions</a></li>
 <li><a href="#java">Java</a></li>
 <li><a href="#open-issues">Open Issues</a></li>
 </ul>
 </li>
+<li><a href="#kubernetes">Kubernetes</a></li>
 <li><a href="#deployment">Deployment</a></li>
-<li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a></li>
+<li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a>
+<ul class="sectlevel2">
+<li><a href="#migration-path-2">Migration Path</a></li>
+<li><a href="#per-instance-access">Per Instance Access</a></li>
+<li><a href="#service-registration">Service Registration</a></li>
+<li><a href="#service-discovery">Service Discovery</a></li>
+<li><a href="#feign">Feign</a></li>
+<li><a href="#migration-steps">Migration Steps</a></li>
+</ul>
+</li>
+<li><a href="#load-balancing">Load Balancing</a></li>
 <li><a href="#circuit-breaker">Circuit Breaker</a></li>
 <li><a href="#monitoring">Monitoring</a>
 <ul class="sectlevel2">
 <li><a href="#prometheus">Prometheus</a></li>
+</ul>
+</li>
+<li><a href="#security">Security</a></li>
+<li><a href="#chaos-engineering">Chaos Engineering</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-2">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#references">References</a></li>
@@ -587,7 +606,7 @@ might not be true in a more complex K8s setup.</p>
 <p>Bringing Istio to the stage adds more features to the table and Istio takes over more of them.</p>
 </div>
 <div class="paragraph">
-<p>TODO: Add</p>
+<p>TODO: Extend the tables with Istio</p>
 </div>
 <div class="ulist">
 <ul>
@@ -601,13 +620,28 @@ might not be true in a more complex K8s setup.</p>
 <p>Security Ingress: Istio</p>
 </li>
 <li>
-<p>Security Egress: Istio
-*</p>
+<p>Security Egress: Istio</p>
 </li>
 <li>
 <p>&#8230;&#8203;</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="migration-path">Migration Path</h3>
+<div class="paragraph">
+<p>A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
+ago (Many of the Netflix OSS libraries have been made publicly available in 2012/2013 and were adopted by the Spring
+team in the following years).
+In the light of hybrid clouds and the polyglot workloads that are supported on those cloud environments, the focus on
+Java feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for all kinds
+of applications.</p>
+</div>
+<div class="paragraph">
+<p>This documentation also depicts a migration path from the pure Java to a polyglot application world where many of the
+Netflix OSS features are supported by the platform. The huge benefit can be that application logic can be freed
+from platform aspects, leading to cleaner code.</p>
 </div>
 </div>
 </div>
@@ -618,7 +652,8 @@ might not be true in a more complex K8s setup.</p>
 <div class="paragraph">
 <p>Docker is the standard container technology supported by Kubernetes and is on top of the hype curve at the moment.
 From a microservice DevOps team perspective however, dealing with the Docker containers is far below the value
-line. There is absolutely no need to mess around with Docker, it does not add any value from an end-user perspective.
+line. There is absolutely no need to mess around with Docker, it does not add any value to the application from an
+end-user perspective.
 Therefore the Docker container creation process needs to be standardized on a technology level. That means there
 should be standard containers for certain technology stacks with only a minimal set of configuration options:</p>
 </div>
@@ -648,27 +683,33 @@ should be standard containers for certain technology stacks with only a minimal 
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Each technology requires different hooks into the container creation process. For example, in Java the max heap
+settings must be configured by the team that is responsible for the microservice, following a DevOps approach.</p>
+</div>
+<div class="sect2">
+<h3 id="conventions">Conventions</h3>
+<div class="paragraph">
+<p>With Docker the TCP port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+By using conventions, each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
+Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
+container and thus can use the full range of TCP ports.</p>
+</div>
+</div>
 <div class="sect2">
 <h3 id="java">Java</h3>
 <div class="paragraph">
 <p>Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
 needs to be activated explicitly.</p>
 </div>
-<div class="paragraph">
-<p>The only options that must be modified are:
-* Heap Settings
-* &#8230;&#8203;</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>TODO: See manifest.mf from Cloud Foundry for a list of properties that can be configured there</p>
-</li>
-</ul>
-</div>
 <div class="sect3">
 <h4 id="spring-boot">Spring Boot</h4>
-
+<div class="paragraph">
+<p>Spring Boot applications are quite easy to containerize. The hooks into the container</p>
+</div>
+<div class="paragraph">
+<p>*</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="websphere-liberty-profile-jakarta-ee">WebSphere Liberty profile (Jakarta EE)</h4>
@@ -678,14 +719,48 @@ needs to be activated explicitly.</p>
 <div class="sect2">
 <h3 id="open-issues">Open Issues</h3>
 <div class="paragraph">
-<p>TODO:
-*  Configuring the Readiness and Liveness probes
-<strong> <a href="http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html" class="bare">http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html</a>
-</strong> <a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/</a>
-<strong> Open Issues
-</strong>* Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
-extra endpoint because the service might be operational, i.e. live, but not ready yet.</p>
+<p>TODO:</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>Configuring the Readiness and Liveness probes</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html" class="bare">http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html</a></p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/</a></p>
+</li>
+<li>
+<p>Open Issues</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
+extra endpoint because the service might be operational, i.e. live, but not ready yet.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Check what can be configured in Cloud Foundry&#8217;s manifest.mf to derive the configuration hooks</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kubernetes">Kubernetes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>K8s Initializers can attach a service mesh automatically:
+<a href="https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md" class="bare">https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md</a></p>
 </div>
 </div>
 </div>
@@ -712,16 +787,198 @@ extra endpoint because the service might be operational, i.e. live, but not read
 <h2 id="service-registration-discovery">Service Registration &amp; Discovery</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The service registration makes sure that each microservice registers its contact information in a central registry.
-A microservice A consuming a microervice B, contacts the service registry and asks for the contact details of service
-B. It gets a list of instances with its IP address and the port number.
-On K8s the port is the same in each Docker container and the IP is a private IP &#8230;&#8203;.
-On Kubernetes there is no need for a Netflix Eureka anymore.
-The load-balancing is done by the K8s services, which do a load-balancing between the pods, representing the instances
-of an application.</p>
+<p>Service registration makes sure that each microservice registers its contact information in a central registry.
+A microservice MS-A, consuming a microservice MS-B, contacts the service registry and asks for the contact details
+of MS-B. It gets a list of IP addresses and port numbers on which the microservice MS-B instances receive
+incoming requests.</p>
 </div>
 <div class="paragraph">
-<p>The project</p>
+<p>On Kubernetes there is no need for Netflix Eureka anymore. Each microservice is deployed into 1 or more pods. For each
+pod there is a service which does the load-balancing from the central point of contact to the instances, living in the
+pods. Combined with KubeDNS, the microservice can be reached by its name, without any Java infrastructure code or
+library.</p>
+</div>
+<div class="sect2">
+<h3 id="migration-path-2">Migration Path</h3>
+<div class="paragraph">
+<p>Switching from Netflix Eureka based service discovery to the Kubernetes is a multi-stage process as it is impossible
+in a larger microservice setup to migrate all microservices in one step.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>All microservices register at Netflix Eureka<br>
+This makes sure that all microservices, which do not use the K8s DNS lookup yet are able to find its peers.</p>
+</li>
+<li>
+<p>Additionally each microservice is made available via a K8s service and its <code>spring.application.name</code> in DNS<br>
+Microservices, using the new approach use a simple HTTP URL to access the microservice.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="per-instance-access">Per Instance Access</h3>
+<div class="paragraph">
+<p>For some use-cases, going through the service load-balancer to a microservice instance is not an option.
+Those use-cases are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Performing an action on each instance of a service</p>
+</li>
+<li>
+<p>Retrieving information from all instances of a service</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+During a transition phase the Hystrix streams are still relevant. When the circuit-breaker becomes an aspect
+of the underlying infrastructure, accessing the Hystrix streams with the Turbine aggregator is not necessary
+anymore.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="service-registration">Service Registration</h3>
+<div class="paragraph">
+<p>The future registration method, i.e. using Kube DNS only, does not require anything on the application side.
+Instead, the DNS setup must be done as part of the K8s deployment process of an application.
+During the transition period the discovery client for Netflix Eureka registration is still active
+in the microservices to let "old" Spring Cloud microservices, find each other.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="service-discovery">Service Discovery</h3>
+<div class="paragraph">
+<p>A microservice can be reached by using a hostname</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>&lt;service-name&gt;.&lt;namespace&gt;.&lt;domain-suffix&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Where</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>service-name&#8201;&#8212;&#8201;is the name of the microservice as used by the K8s deployment descriptor</p>
+</li>
+<li>
+<p>namespace&#8201;&#8212;&#8201;is the namespace the microservice lives in</p>
+</li>
+<li>
+<p>domain-suffix&#8201;&#8212;&#8201;is a configurable suffix, defined by the K8s cluster</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>An example hostname looks like this:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>backend-service.default.svc.cluster.local</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>backend-service</code> is the name of the service, <code>default</code> is the namespace in which the service lives, and
+`svc.cluster.local`is the domain suffix.</p>
+</div>
+<div class="paragraph">
+<p>With Docker the port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+Using conventions each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
+Hazelcast is involved, port 5701 will be used.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="feign">Feign</h3>
+<div class="paragraph">
+<p>Feign, is a declarative REST client framework. It incorporates Netflix Ribbon and Hystrix. Ribbon is the client
+side load-balancing library with pluggable load-balancing algorithms, like 'round-robin' or 'response-time'.</p>
+</div>
+<div class="paragraph">
+<p>When using Feign as a declarative REST client, the following approach could be taken to migrate from the Spring
+Cloud / Netflix OSS world to Kubernetes:</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="migration-steps">Migration Steps</h3>
+<div class="paragraph">
+<p>TODO: Define the exact steps</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the spring-cloud-kubernetes discovery client as a dependency to perform a lookup via the DNS name instead of
+the list of Eureka defined instances. Does <a href="https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery">spring-cloud-kubernetes-discovery</a>
+work with Feign? Which namespace name is used? Can this be configured?</p>
+</li>
+<li>
+<p>Disable Hystrix: <code>spring.cloud.circuit.breaker.enabled=false</code></p>
+</li>
+<li>
+<p>Disable Ribbon: <code>ribbon.eureka.enabled</code></p>
+</li>
+<li>
+<p>Use the url parameter in the @FeignClient annotation</p>
+</li>
+<li>
+<p>Convert Feign to using RestTemplate (no API JARs) or Spring Web MVC (using API JARs)</p>
+</li>
+<li>
+<p>Remove dependencies to Ribbon, Feign and Hystrix</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Load-balancing is covered in depth in the chapter <a href="#load-balancing">Load Balancing</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="load-balancing">Load Balancing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Load-Balancing in Kubernetes is defined by multiple factors.
+There is no load balancer in Kubernetes itself. Instead, when creating a service of type LoadBalancer, a cloud
+provider&#8217;s load-balancer is provisioned as the Kubernetes service.
+This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
+configuration AWS' Elastic Load Balancer is completely different to Azure, IBM, or the Google load
+balancers.</p>
+</div>
+<div class="paragraph">
+<p>TODO:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ribbon</p>
+</li>
+<li>
+<p>Client side load-balancing with Istio</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -744,6 +1001,44 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 </div>
 <div class="paragraph">
 <p>Prerequisite: Spring Boot 2.0 with Micrometer</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="security">Security</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="chaos-engineering">Chaos Engineering</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TODO</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>TroubleMaker</p>
+</li>
+<li>
+<p>Chaos Monkey for Spring Boot<br>
+<a href="https://codecentric.github.io/chaos-monkey-spring-boot/" class="bare">https://codecentric.github.io/chaos-monkey-spring-boot/</a></p>
+</li>
+<li>
+<p>Istio</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="open-issues-2">Open Issues</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>What to support on which level? Does it make sense to mix Chaos Monkey for Spring Boot and Istio?</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -806,7 +1101,7 @@ DiagramBlock &lt;|-- PlantUmlBlock</pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-26 17:35:17 CEST
+Last updated 2018-04-27 11:44:11 CEST
 </div>
 </div>
 </body>
