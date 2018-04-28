@@ -56,7 +56,6 @@ Ideally the next Long Term Support version Java 11 should be used to not worry a
 
 
 ==== Spring Boot ====
-
 Spring Boot applications are quite easy to containerize, see https://spring.io/guides/gs/spring-boot-docker/[Spring Boot with Docker]
 for an example.
 
@@ -79,8 +78,8 @@ https://store.docker.com/images/websphere-liberty[IBM WebSphere Application Serv
 
 === Build Process ===
 The build process takes the latest available Java Docker base image and creates an application specific image
-out of it. It must be possible to trigger this process outside of the application deployment process to be able
-to update the application images by using a new Java base images in case of security issues.
+on top of it. It must be possible to trigger this process outside of the application deployment process to be able
+to update the application images by using a new Java base images in case of any security issues.
 
 
 === Open Issues ===

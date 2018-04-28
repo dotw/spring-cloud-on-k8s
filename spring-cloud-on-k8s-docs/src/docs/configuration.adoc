@@ -5,6 +5,10 @@ will not survive the Kubernetes migration in the long run. Instead a more genera
 The Spring Cloud Kubernetes incubator project extends the Spring Boot hierarchy of PropertySources by
 another one that gets populated from the Kubernetes ConfigMaps and the Kubernetes Secrets.
 
+The Spring Cloud Kubernetes Config implementation triggers the reload of the @RefreshScope annotated beans
+when a change in the ConfigMap is detected. The `metadata.name` of the ConfigMap must be set to the
+`spring.application.name` for the Spring Cloud Kubernetes Config implementation to load the ConfigMap as a
+`PropertySource` into the application `Environment`.
 
 === Migration Path ===
 The migration process
@@ -13,10 +17,20 @@ The migration process
 .. Switch from Eureka first to Config-Server first approach
 .. Align the configuration
 . Phase 2
-.. Bake the config file into the Docker image as part of the build process (12-factor apps, all config via
-the process environment)
-.. A config update will be a re-deployment!?
+.. Put the environment specific properties into a ConfigMap as part of the deployment
+.. Allow updates to the ConfigMap at runtime
 
 === Open Issues ===
 
-TODO: How to handle runtime updates of the configuration when it is part of the process environment?
+* How to handle runtime updates of the configuration when it is part of the process environment?
+* What backends are available for the ConfigMaps resources and how does the process look like to work with ConfigMap
+changes?
+* Use Spring Cloud Kubernetes Config or configure the ConfigMap to put the properties into the environment of the pod?
+** https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables
+** Putting it into the environment has the issue that the process needs to be restarted to make changes available to
+the process.
+* When a change to the environment specific properties triggers an automatic config update, how to define whether a
+service is restarted or whether the /refresh endpoint is called only? This depends on the property, e.g. changing
+the webcontainer's HTTP port requires a restart, whereas a Hystrix timeout change can be applied on the fly.
+* What about text or binary files in the config? Excel configuration files, WSDL files, ...
+

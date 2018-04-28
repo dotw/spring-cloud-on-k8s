@@ -3,7 +3,7 @@ Kubernetes is the container orchestration platform, released by Google as open-s
 is gaining significant traction all over the software industry.
 
 This section covers several aspects of the Kubernetes ecosystem which seem to be useful when building a
-platform as a service on top of Kubernetes but is :
+platform as a service on top of Kubernetes:
 
 * Operators
 ** Concept
@@ -24,3 +24,6 @@ platform as a service on top of Kubernetes but is :
 ** https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md[K8s Initializers can attach a service mesh automatically]
 * Istio
 ** https://istio.io/[Istio Service Mesh]
+* Draft
+** https://github.com/Azure/draft[Azure Draft]
+** https://kubernetes.io/blog/2017/05/draft-kubernetes-container-development[Draft: Kubernetes container development made easy]

@@ -10,6 +10,8 @@ include::containerization.adoc[]
 
 include::deployment.adoc[]
 
+include::k8s-architecture.adoc[]
+
 include::configuration.adoc[]
 
 include::service-discovery-registration.adoc[]
