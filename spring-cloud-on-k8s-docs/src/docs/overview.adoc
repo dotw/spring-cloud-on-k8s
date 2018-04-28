@@ -5,7 +5,8 @@ Migrating a Spring Boot application to Kubernetes, which heavily uses the Spring
 project, is challenging because of the many overlaps and the various ways certain features can be implemented
 in the Kubernetes world.
 
-There is a project in Spring Cloud incubation, called Spring-Cloud-Kubernetes, which tackles a few of those issues,
+There is a project in Spring Cloud incubation (formerly * https://spring.fabric8.io[Fabric8]), called
+Spring-Cloud-Kubernetes, which tackles a few of those issues,
 but unfortunately it does not cover Istio yet. Istio is aiming to take over more of the Spring Cloud Netflix topics,
 implementing them in a technology agnostic way.
 

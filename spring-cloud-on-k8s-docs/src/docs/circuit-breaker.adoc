@@ -11,4 +11,4 @@ Idea:
 of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by
 
 === Open Issues
-TODO
+TODO: See https://github.com/fabric8io/kubeflix[Kubeflix]
