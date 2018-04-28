@@ -1,0 +1,6 @@
+== Database Migration ==
+
+For database migrations Liquibase is used. Liquibase scripts are part of the application package and
+a special application mode makes sure that the scripts are executed from out of the deployment package.
+
+TODO: Liquibase migrations are part of the application delivery package

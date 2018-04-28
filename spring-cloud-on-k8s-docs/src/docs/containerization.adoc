@@ -5,9 +5,10 @@ However, from a microservice DevOps team perspective, dealing with Docker does n
 application from an end-user perspective. The idea is therefore to hide the container technology from the normal
 developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
 require a completely different container setup than for the existing technologies. Such explorative applications
-will probably not be supported in the same way as the established technology stacks.
+will probably not be supported in the same way as the established technology stacks at first, which means there
+is more effort to deploy and operate them than for supported technology stacks.
 
-The following stacks are quite popular in enterprises today:
+The following stacks are quite popular in enterprises today and must be supported:
 
 * Java
 ** Jakarta EE (e.g. WebSphere Liberty Profile)
@@ -17,13 +18,27 @@ The following stacks are quite popular in enterprises today:
 * ...
 
 For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
-functionality to production.
+business functionality into production.
+
 
 === Configuration ===
 Each technology requires different hooks into the container creation process. For example, in Java the max heap
 settings must be configured by the team that is responsible for the microservice, following a DevOps approach.
 
-TODO: All applications should follow the 12-factor approach to allow configuration via environment variables
+* wait time for becoming ready, i.e. when is application ready to serve requests (readiness in Kubernetes)
+** initial delay
+** frequency of probe
+* liveness defines whether the application is able to serve requests, i.e. health status
+** initial delay
+** frequency of probe
+* heap settings
+* truststore/keystore
+* network proxy settings
+* other vm parameters or environment variables
+
+See https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[Cloud Foundry's manifest.mf]
+file as an example for which aspects of an application must be configurable.
+
 
 === Conventions ===
 With Docker the TCP port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
@@ -31,31 +46,53 @@ By using conventions, each microservice starts its HTTP endpoint at port 80, its
 Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
 container and thus can use the full range of TCP ports.
 
+WARNING: How to work with microservices locally on a developer machine when all use the same port? Random port?
+
 
 === Java ===
 Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
-needs to be activated explicitly.
+needs to be activated explicitly (See https://blogs.oracle.com/java-platform-group/java-se-support-for-docker-cpu-and-memory-limits[Support for Docker CPU and Memory Limits])
+Ideally the next Long Term Support version Java 11 should be used to not worry about Java in Docker anymore.
+
 
 ==== Spring Boot ====
 
-Spring Boot applications are quite easy to containerize. The hooks into the container
+Spring Boot applications are quite easy to containerize, see https://spring.io/guides/gs/spring-boot-docker/[Spring Boot with Docker]
+for an example.
 
-*
+In a Spring Boot application the Actuator health endpoint can be used for readiness and liveness probing. This
+should be the default setting. If an application choses to have a special readiness implementation then it must be
+possible for the application to override the default. An example for this might be an application that does
+some cache warm up after it starts. The Spring Boot application has started its web container and the health
+endpoints returns 200 OK because the database can be reached and there is enough space on the file-system.
+As a last step in the application startup phase it starts populating the cache with entries which might take a
+few minutes to adapt.
+One possibility to implement this would be to provide a different endpoint, e.g. /readiness which calls the
+HealthIndicator as a default, which is also executed by the /health endpoint. When an application has the need for
+a special readiness implementation it could override the ReadinessIndicator and implement a custom logic there.
+
 
 ==== WebSphere Liberty profile (Jakarta EE) ====
+For WebSphere liberty profile there are pre-built images available from IBM, see
+https://store.docker.com/images/websphere-liberty[IBM WebSphere Application Server Liberty] on Docker Hub.
 
 
+=== Build Process ===
+The build process takes the latest available Java Docker base image and creates an application specific image
+out of it. It must be possible to trigger this process outside of the application deployment process to be able
+to update the application images by using a new Java base images in case of security issues.
 
 
 === Open Issues ===
-
-
-TODO:
+The following issues need to be clarified in the context of Containerization:
 
 *  Configuring the Readiness and Liveness probes
 ** http://zavyn.blogspot.de/2017/05/kubernetes-readiness-and-liveness-with.html
 ** https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-** Open Issues
-*** Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
+** Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
 extra endpoint because the service might be operational, i.e. live, but not ready yet.
-* Check what can be configured in Cloud Foundry's manifest.mf to derive the configuration hooks
+** Do we need an additional readiness check in Spring Boot Actuator? The Blogpost from above uses the health endpoint
+for both, readiness and liveness.
+* Exact definition of the build process
+* How to make sure that microservices can easily be used locally without forcing them to run minikube
+

@@ -1,4 +1,26 @@
-== Kubernetes ==
+=== Kubernetes ===
+Kubernetes is the container orchestration platform, released by Google as open-source project and
+is gaining significant traction all over the software industry.
 
-K8s Initializers can attach a service mesh automatically:
-https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md
+This section covers several aspects of the Kubernetes ecosystem which seem to be useful when building a
+platform as a service on top of Kubernetes but is :
+
+* Operators
+** Concept
+*** https://thenewstack.io/automating-kubernetes-cluster-operations-operators/[K8s Operators]
+*** https://de.slideshare.net/Jakobkaralus/the-kubernetes-operator-pattern-containerconf-nov-2017[Operator Pattern]
+*** https://blog.couchbase.com/kubernetes-operators-game-changer/[K8s Operators Game Changer]
+** Useful Operators
+*** https://coreos.com/blog/introducing-vault-operator-project[Vault]
+*** https://coreos.com/blog/the-prometheus-operator.html?utm_source=blog&utm_medium=referral[Prometheus]
+*** https://akomljen.com/kubernetes-elasticsearch-operator/[Elasticsearch]
+*** http://info.crunchydata.com/blog/postgres-operator-for-kubernetes[PostgreSQL]
+* Service Brokers
+** https://www.openservicebrokerapi.org/[Open Service Broker API]
+** https://kubernetes.io/docs/concepts/service-catalog/[Service Catalog]
+** https://cloud.spring.io/spring-cloud-open-service-broker/[Spring Cloud Open Service Broker]
+* Initializers
+** https://ahmet.im/blog/initializers/[How Kubernetes Initializers work]
+** https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md[K8s Initializers can attach a service mesh automatically]
+* Istio
+** https://istio.io/[Istio Service Mesh]

@@ -1,7 +1,16 @@
 == Deployment ==
 
+TODO: ...
+
 * Canary
 * Blue Green Deployments
 * Dark Launch
-*
+* Runtime Config Updates
 * ...
+
+Important concepts:
+
+* Zero Downtime Deployments
+* Forward compatibility of database schema updates
+* Backwards compatibility of API changes, i.e. no breaking changes
+* ....

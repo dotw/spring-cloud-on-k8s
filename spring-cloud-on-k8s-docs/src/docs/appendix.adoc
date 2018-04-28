@@ -1,0 +1,8 @@
+== Appendix ==
+ifndef::imagesdir[:imagesdir: images]
+
+include::kubernetes.adoc[]
+
+include::references.adoc[]
+
+

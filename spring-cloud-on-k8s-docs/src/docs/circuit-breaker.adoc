@@ -1,4 +1,11 @@
 == Circuit Breaker ==
 
 TODO:
-Get rid of Hystrix and turn to Istio for this purpose
+
+* Get rid of Hystrix and turn to Istio for this purpose
+* But what about the monitoring functionality that was possible with the Hstrix Dashboard?
+
+Idea:
+
+* Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
+of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by

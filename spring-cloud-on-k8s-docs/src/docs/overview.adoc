@@ -1,16 +1,16 @@
 == Overview ==
 ifndef::imagesdir[:imagesdir: images]
 
-Moving a Spring Boot application, which heavily uses the Spring Cloud features around the Netflix OSS project, to
-Kubernetes (K8s) is challenging because of the many overlaps and the various ways certain features can be implemented
-in Kubernetes.
+Migrating a Spring Boot application to Kubernetes, which heavily uses the Spring Cloud features of the Netflix OSS
+project, is challenging because of the many overlaps and the various ways certain features can be implemented
+in the Kubernetes world.
 
 There is a project in Spring Cloud incubation, called Spring-Cloud-Kubernetes, which tackles a few of those issues,
-but unfortunately it does not cover Istio yet. Istio is aiming to takeover more of the Spring Cloud Netflix topics,
-mplementing them in a technology agnostic way.
+but unfortunately it does not cover Istio yet. Istio is aiming to take over more of the Spring Cloud Netflix topics,
+implementing them in a technology agnostic way.
 
 The Spring Cloud Kubernetes project does some assumptions, like all applications are in the same K8s namespace, which
-might not be true in a more complex K8s setup.
+might not be the case in more complex Kubernetes setups.
 
 === Feature Overlap ===
 
@@ -26,10 +26,10 @@ which does not cover Istio because the publishing date of the article pre-dates 
 A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
 ago (Many of the Netflix OSS libraries have been made publicly available in 2012 and were adopted by the Spring
 team in the following years).
-In the light of hybrid clouds and the polyglot workloads that are supported on those cloud environments, the focus on
-Java feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for all kinds
-of applications.
+In the light of hybrid clouds and the polyglot workloads that are migrated to those cloud environments, the focus on
+Java only feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for
+all kind of applications.
 
-This documentation also depicts a migration path from the pure Java to a polyglot application world where many of the
-Netflix OSS features are supported by the platform. The huge benefit can be that application logic can be freed
-from platform aspects, leading to cleaner code.
+This documentation also depicts migration paths from the pure Java to a polyglot application world where many
+of the Netflix OSS features are provided out of the platform. A huge benefit would be that platform aspects
+can be removed from application code, leading to cleaner and easier to maintain codebase.

@@ -1,13 +1,20 @@
 == Chaos Engineering ==
+Chaos engineering is a very new practice where failure gets injected into the systems -- on production (!) -- in
+order to find issues where the system is not able to deal properly with failures.
 
-TODO
+Multiple frameworks are emerging which cover the chaos injection topic:
 
-* TroubleMaker
-* Chaos Monkey for Spring Boot +
-https://codecentric.github.io/chaos-monkey-spring-boot/
-* Istio
+* Application Level
+** https://keyholesoftware.com/2015/12/15/failure-as-a-use-case-introducing-trouble-maker/[TroubleMaker]
+** https://codecentric.github.io/chaos-monkey-spring-boot/[Chaos Monkey for Spring Boot]
+** https://istio.io/docs/concepts/traffic-management/fault-injection.html[Istio Fault Injection]
+* Infrastructure Layer
+** Chaos Toolkit for Kubernetes +
+https://github.com/chaostoolkit/chaostoolkit-kubernetes
+
 
 === Open Issues ===
 
 * What to support on which level? Does it make sense to mix Chaos Monkey for Spring Boot and Istio?
+* A DevOps team will not be able to inject chaos at the Kubernetes infrastructure level
 

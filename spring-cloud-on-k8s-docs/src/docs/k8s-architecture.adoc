@@ -1,8 +1,13 @@
 == Kubernetes Architecture ==
+The Kubernetes platform architecture significantly influences how Spring Cloud works on Kubernetes and whether
+the Spring Cloud Kubernetes incubation project can be used out of the box or whether this implementation must be
+tweaked further.
 
-TODO
+Assumption:
 
 * Namespaces per environment (test, staging, prod, ...)
-* One or more environments in one cluster
-* Multiple clusters communicating with each other
-* Using Istio to prevent microservices from calling each other
+* One or more environments in one K8s cluster
+* Multiple clusters communicating with each other (Microservice dependencies from one cluster into another)
+* Using Istio to prevent microservices from calling each other inside one cluster
+
+TODO: ....

@@ -1,4 +1,4 @@
-== References ==
+=== References ===
 
 * Spring Cloud for Microservices Compared to Kubernetes (12/09/2016, Bilgin Ibryam)
 https://developers.redhat.com/blog/2016/12/09/spring-cloud-for-microservices-compared-to-kubernetes/

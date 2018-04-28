@@ -5,6 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.2">
+<meta name="author" content="Michael Rumpf">
 <title>Spring Cloud on Kubernetes</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
@@ -520,6 +521,12 @@ table.CodeRay td.code>pre{padding:0}
 <body class="article toc2 toc-left">
 <div id="header">
 <h1>Spring Cloud on Kubernetes</h1>
+<div class="details">
+<span id="author" class="author">Michael Rumpf</span><br>
+<span id="email" class="email">michael _at_ rumpfonline.de</span><br>
+<span id="revnumber">version 0.1,</span>
+<span id="revdate">2018</span>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
@@ -534,14 +541,20 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#configuration">Configuration</a></li>
 <li><a href="#conventions">Conventions</a></li>
 <li><a href="#java">Java</a></li>
+<li><a href="#build-process">Build Process</a></li>
 <li><a href="#open-issues">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#kubernetes">Kubernetes</a></li>
 <li><a href="#deployment">Deployment</a></li>
-<li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a>
+<li><a href="#configuration-2">Configuration</a>
 <ul class="sectlevel2">
 <li><a href="#migration-path-2">Migration Path</a></li>
+<li><a href="#open-issues-2">Open Issues</a></li>
+</ul>
+</li>
+<li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a>
+<ul class="sectlevel2">
+<li><a href="#migration-path-3">Migration Path</a></li>
 <li><a href="#per-instance-access">Per Instance Access</a></li>
 <li><a href="#service-registration">Service Registration</a></li>
 <li><a href="#service-discovery">Service Discovery</a></li>
@@ -549,7 +562,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#migration-steps">Migration Steps</a></li>
 </ul>
 </li>
-<li><a href="#load-balancing">Load Balancing</a></li>
+<li><a href="#load-balancing">Load Balancing</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-3">Open Issues</a></li>
+</ul>
+</li>
 <li><a href="#circuit-breaker">Circuit Breaker</a></li>
 <li><a href="#monitoring">Monitoring</a>
 <ul class="sectlevel2">
@@ -558,12 +575,18 @@ table.CodeRay td.code>pre{padding:0}
 </ul>
 </li>
 <li><a href="#security">Security</a></li>
+<li><a href="#database-migration">Database Migration</a></li>
 <li><a href="#chaos-engineering">Chaos Engineering</a>
 <ul class="sectlevel2">
-<li><a href="#open-issues-2">Open Issues</a></li>
+<li><a href="#open-issues-4">Open Issues</a></li>
 </ul>
 </li>
+<li><a href="#appendix">Appendix</a>
+<ul class="sectlevel2">
+<li><a href="#kubernetes">Kubernetes</a></li>
 <li><a href="#references">References</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -572,18 +595,18 @@ table.CodeRay td.code>pre{padding:0}
 <h2 id="overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Moving a Spring Boot application, which heavily uses the Spring Cloud features around the Netflix OSS project, to
-Kubernetes (K8s) is challenging because of the many overlaps and the various ways certain features can be implemented
-in Kubernetes.</p>
+<p>Migrating a Spring Boot application to Kubernetes, which heavily uses the Spring Cloud features of the Netflix OSS
+project, is challenging because of the many overlaps and the various ways certain features can be implemented
+in the Kubernetes world.</p>
 </div>
 <div class="paragraph">
 <p>There is a project in Spring Cloud incubation, called Spring-Cloud-Kubernetes, which tackles a few of those issues,
-but unfortunately it does not cover Istio yet. Istio is aiming to takeover more of the Spring Cloud Netflix topics,
-mplementing them in a technology agnostic way.</p>
+but unfortunately it does not cover Istio yet. Istio is aiming to take over more of the Spring Cloud Netflix topics,
+implementing them in a technology agnostic way.</p>
 </div>
 <div class="paragraph">
 <p>The Spring Cloud Kubernetes project does some assumptions, like all applications are in the same K8s namespace, which
-might not be true in a more complex K8s setup.</p>
+might not be the case in more complex Kubernetes setups.</p>
 </div>
 <div class="sect2">
 <h3 id="feature-overlap">Feature Overlap</h3>
@@ -592,7 +615,7 @@ might not be true in a more complex K8s setup.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/SpringCloud-Kubernetes-Istio.png" alt="Sunset">
+<img src="images/SpringCloud-Kubernetes-Istio.png" alt="Spring Cloud - Kubernetes &amp; Istio">
 </div>
 </div>
 <div class="paragraph">
@@ -607,14 +630,14 @@ which does not cover Istio because the publishing date of the article pre-dates 
 <p>A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
 ago (Many of the Netflix OSS libraries have been made publicly available in 2012 and were adopted by the Spring
 team in the following years).
-In the light of hybrid clouds and the polyglot workloads that are supported on those cloud environments, the focus on
-Java feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for all kinds
-of applications.</p>
+In the light of hybrid clouds and the polyglot workloads that are migrated to those cloud environments, the focus on
+Java only feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for
+all kind of applications.</p>
 </div>
 <div class="paragraph">
-<p>This documentation also depicts a migration path from the pure Java to a polyglot application world where many of the
-Netflix OSS features are supported by the platform. The huge benefit can be that application logic can be freed
-from platform aspects, leading to cleaner code.</p>
+<p>This documentation also depicts migration paths from the pure Java to a polyglot application world where many
+of the Netflix OSS features are provided out of the platform. A huge benefit would be that platform aspects
+can be removed from application code, leading to cleaner and easier to maintain codebase.</p>
 </div>
 </div>
 </div>
@@ -629,10 +652,11 @@ However, from a microservice DevOps team perspective, dealing with Docker does n
 application from an end-user perspective. The idea is therefore to hide the container technology from the normal
 developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
 require a completely different container setup than for the existing technologies. Such explorative applications
-will probably not be supported in the same way as the established technology stacks.</p>
+will probably not be supported in the same way as the established technology stacks at first, which means there
+is more effort to deploy and operate them than for supported technology stacks.</p>
 </div>
 <div class="paragraph">
-<p>The following stacks are quite popular in enterprises today:</p>
+<p>The following stacks are quite popular in enterprises today and must be supported:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -662,7 +686,7 @@ will probably not be supported in the same way as the established technology sta
 </div>
 <div class="paragraph">
 <p>For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
-functionality to production.</p>
+business functionality into production.</p>
 </div>
 <div class="sect2">
 <h3 id="configuration">Configuration</h3>
@@ -670,8 +694,51 @@ functionality to production.</p>
 <p>Each technology requires different hooks into the container creation process. For example, in Java the max heap
 settings must be configured by the team that is responsible for the microservice, following a DevOps approach.</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>wait time for becoming ready, i.e. when is application ready to serve requests (readiness in Kubernetes)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>initial delay</p>
+</li>
+<li>
+<p>frequency of probe</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>liveness defines whether the application is able to serve requests, i.e. health status</p>
+<div class="ulist">
+<ul>
+<li>
+<p>initial delay</p>
+</li>
+<li>
+<p>frequency of probe</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>heap settings</p>
+</li>
+<li>
+<p>truststore/keystore</p>
+</li>
+<li>
+<p>network proxy settings</p>
+</li>
+<li>
+<p>other vm parameters or environment variables</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
-<p>TODO: All applications should follow the 12-factor approach to allow configuration via environment variables</p>
+<p>See <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html">Cloud Foundry&#8217;s manifest.mf</a>
+file as an example for which aspects of an application must be configurable.</p>
 </div>
 </div>
 <div class="sect2">
@@ -682,31 +749,65 @@ By using conventions, each microservice starts its HTTP endpoint at port 80, its
 Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
 container and thus can use the full range of TCP ports.</p>
 </div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+How to work with microservices locally on a developer machine when all use the same port? Random port?
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="java">Java</h3>
 <div class="paragraph">
 <p>Docker is supported natively in Java 10 and higher. For Java 8 and Java 9 VMs the support has been backported, but
-needs to be activated explicitly.</p>
+needs to be activated explicitly (See <a href="https://blogs.oracle.com/java-platform-group/java-se-support-for-docker-cpu-and-memory-limits">Support for Docker CPU and Memory Limits</a>)
+Ideally the next Long Term Support version Java 11 should be used to not worry about Java in Docker anymore.</p>
 </div>
 <div class="sect3">
 <h4 id="spring-boot">Spring Boot</h4>
 <div class="paragraph">
-<p>Spring Boot applications are quite easy to containerize. The hooks into the container</p>
+<p>Spring Boot applications are quite easy to containerize, see <a href="https://spring.io/guides/gs/spring-boot-docker/">Spring Boot with Docker</a>
+for an example.</p>
 </div>
 <div class="paragraph">
-<p>*</p>
+<p>In a Spring Boot application the Actuator health endpoint can be used for readiness and liveness probing. This
+should be the default setting. If an application choses to have a special readiness implementation then it must be
+possible for the application to override the default. An example for this might be an application that does
+some cache warm up after it starts. The Spring Boot application has started its web container and the health
+endpoints returns 200 OK because the database can be reached and there is enough space on the file-system.
+As a last step in the application startup phase it starts populating the cache with entries which might take a
+few minutes to adapt.
+One possibility to implement this would be to provide a different endpoint, e.g. /readiness which calls the
+HealthIndicator as a default, which is also executed by the /health endpoint. When an application has the need for
+a special readiness implementation it could override the ReadinessIndicator and implement a custom logic there.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="websphere-liberty-profile-jakarta-ee">WebSphere Liberty profile (Jakarta EE)</h4>
-
+<div class="paragraph">
+<p>For WebSphere liberty profile there are pre-built images available from IBM, see
+<a href="https://store.docker.com/images/websphere-liberty">IBM WebSphere Application Server Liberty</a> on Docker Hub.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="build-process">Build Process</h3>
+<div class="paragraph">
+<p>The build process takes the latest available Java Docker base image and creates an application specific image
+out of it. It must be possible to trigger this process outside of the application deployment process to be able
+to update the application images by using a new Java base images in case of security issues.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="open-issues">Open Issues</h3>
 <div class="paragraph">
-<p>TODO:</p>
+<p>The following issues need to be clarified in the context of Containerization:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -721,39 +822,33 @@ needs to be activated explicitly.</p>
 <p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/</a></p>
 </li>
 <li>
-<p>Open Issues</p>
-<div class="ulist">
-<ul>
-<li>
 <p>Liveness is different than readiness and should only be the same as a fallback. However readiness often requires an
 extra endpoint because the service might be operational, i.e. live, but not ready yet.</p>
 </li>
-</ul>
-</div>
+<li>
+<p>Do we need an additional readiness check in Spring Boot Actuator? The Blogpost from above uses the health endpoint
+for both, readiness and liveness.</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>Check what can be configured in Cloud Foundry&#8217;s manifest.mf to derive the configuration hooks</p>
+<p>Exact definition of the build process</p>
+</li>
+<li>
+<p>How to make sure that microservices can easily be used locally without forcing them to run minikube</p>
 </li>
 </ul>
 </div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="kubernetes">Kubernetes</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>K8s Initializers can attach a service mesh automatically:
-<a href="https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md" class="bare">https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md</a></p>
 </div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="deployment">Deployment</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>TODO: &#8230;&#8203;</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
@@ -770,6 +865,81 @@ extra endpoint because the service might be operational, i.e. live, but not read
 <p>&#8230;&#8203;</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Important concepts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Zero Downtime Deployments</p>
+</li>
+<li>
+<p>Forward compatibility of database schema updates</p>
+</li>
+<li>
+<p>Backwards compatibility of API changes, i.e. no breaking changes</p>
+</li>
+<li>
+<p>&#8230;&#8203;.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="configuration-2">Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Looking at the polyglot application landscape with different technology stacks, then the Spring Cloud Config server
+will not survive the Kubernetes migration in the long run. Instead a more general approach must be taken.</p>
+</div>
+<div class="paragraph">
+<p>The Spring Cloud Kubernetes incubator project extends the Spring Boot hierarchy of PropertySources by
+another one that gets populated from the Kubernetes ConfigMaps and the Kubernetes Secrets.</p>
+</div>
+<div class="sect2">
+<h3 id="migration-path-2">Migration Path</h3>
+<div class="paragraph">
+<p>The migration process</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Phase 1</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Switch from Eureka first to Config-Server first approach</p>
+</li>
+<li>
+<p>Align the configuration</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Phase 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Bake the config file into the Docker image as part of the build process (12-factor apps, all config via
+the process environment)</p>
+</li>
+<li>
+<p>A config update will be a re-deployment!?</p>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="open-issues-2">Open Issues</h3>
+<div class="paragraph">
+<p>TODO: How to handle runtime updates of the configuration when it is part of the process environment?</p>
+</div>
 </div>
 </div>
 </div>
@@ -789,7 +959,7 @@ pods. Combined with KubeDNS, the microservice can be reached by its name, withou
 library.</p>
 </div>
 <div class="sect2">
-<h3 id="migration-path-2">Migration Path</h3>
+<h3 id="migration-path-3">Migration Path</h3>
 <div class="paragraph">
 <p>Switching from Netflix Eureka based service discovery to the Kubernetes is a multi-stage process as it is impossible
 in a larger microservice setup to migrate all microservices in one step.</p>
@@ -952,18 +1122,24 @@ Load-balancing is covered in depth in the chapter <a href="#load-balancing">Load
 <div class="paragraph">
 <p>Load-Balancing in Kubernetes is defined by multiple factors.
 There is no load balancer in Kubernetes itself. Instead, when creating a service of type LoadBalancer, a cloud
-provider&#8217;s load-balancer is provisioned as the Kubernetes service.
-This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
-configuration AWS' Elastic Load Balancer is completely different to Azure, IBM, or the Google load
-balancers.</p>
+provider&#8217;s load-balancer is provisioned as the Kubernetes service. That is the reason why it is currently not
+possible for Minikube to create a resource of type LoadBalancer
+(see <a href="https://github.com/kubernetes/minikube/issues/384">Loadbalancer support</a> for a solution)</p>
 </div>
+<div class="paragraph">
+<p>This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
+configuration, configuring an AWS' Elastic Load Balancer is completely different to configuring
+load-balancers on Azure, IBM, or on the Google cloud.</p>
+</div>
+<div class="sect2">
+<h3 id="open-issues-3">Open Issues</h3>
 <div class="paragraph">
 <p>TODO:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Ribbon</p>
+<p>Ribbon &#8594; drop ribbon in the long run</p>
 </li>
 <li>
 <p>Client side load-balancing with Istio</p>
@@ -972,12 +1148,33 @@ balancers.</p>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="circuit-breaker">Circuit Breaker</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO:
-Get rid of Hystrix and turn to Istio for this purpose</p>
+<p>TODO:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Get rid of Hystrix and turn to Istio for this purpose</p>
+</li>
+<li>
+<p>But what about the monitoring functionality that was possible with the Hstrix Dashboard?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Idea:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
+of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1004,35 +1201,73 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 <div class="sect1">
 <h2 id="security">Security</h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>TODO: Vault</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="database-migration">Database Migration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For database migrations Liquibase is used. Liquibase scripts are part of the application package and
+a special application mode makes sure that the scripts are executed from out of the deployment package.</p>
+</div>
+<div class="paragraph">
+<p>TODO: Liquibase migrations are part of the application delivery package</p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="chaos-engineering">Chaos Engineering</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO</p>
+<p>Chaos engineering is a very new practice where failure gets injected into the systems&#8201;&#8212;&#8201;on production (!)&#8201;&#8212;&#8201;in
+order to find issues where the system is not able to deal properly with failures.</p>
+</div>
+<div class="paragraph">
+<p>Multiple frameworks are emerging which cover the chaos injection topic:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>TroubleMaker</p>
+<p>Application Level</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://keyholesoftware.com/2015/12/15/failure-as-a-use-case-introducing-trouble-maker/">TroubleMaker</a></p>
 </li>
 <li>
-<p>Chaos Monkey for Spring Boot<br>
-<a href="https://codecentric.github.io/chaos-monkey-spring-boot/" class="bare">https://codecentric.github.io/chaos-monkey-spring-boot/</a></p>
+<p><a href="https://codecentric.github.io/chaos-monkey-spring-boot/">Chaos Monkey for Spring Boot</a></p>
 </li>
 <li>
-<p>Istio</p>
+<p><a href="https://istio.io/docs/concepts/traffic-management/fault-injection.html">Istio Fault Injection</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Infrastructure Layer</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Chaos Toolkit for Kubernetes<br>
+<a href="https://github.com/chaostoolkit/chaostoolkit-kubernetes" class="bare">https://github.com/chaostoolkit/chaostoolkit-kubernetes</a></p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="open-issues-2">Open Issues</h3>
+<h3 id="open-issues-4">Open Issues</h3>
 <div class="ulist">
 <ul>
 <li>
 <p>What to support on which level? Does it make sense to mix Chaos Monkey for Spring Boot and Istio?</p>
+</li>
+<li>
+<p>A DevOps team will not be able to inject chaos at the Kubernetes infrastructure level</p>
 </li>
 </ul>
 </div>
@@ -1040,8 +1275,106 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="references">References</h2>
+<h2 id="appendix">Appendix</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="kubernetes">Kubernetes</h3>
+<div class="paragraph">
+<p>Kubernetes is the container orchestration platform, released by Google as open-source project and
+is gaining significant traction all over the software industry.</p>
+</div>
+<div class="paragraph">
+<p>This section covers several aspects of the Kubernetes ecosystem which seem to be useful when building a
+platform as a service on top of Kubernetes but is :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Operators</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Concept</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://thenewstack.io/automating-kubernetes-cluster-operations-operators/">K8s Operators</a></p>
+</li>
+<li>
+<p><a href="https://de.slideshare.net/Jakobkaralus/the-kubernetes-operator-pattern-containerconf-nov-2017">Operator Pattern</a></p>
+</li>
+<li>
+<p><a href="https://blog.couchbase.com/kubernetes-operators-game-changer/">K8s Operators Game Changer</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Useful Operators</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://coreos.com/blog/introducing-vault-operator-project">Vault</a></p>
+</li>
+<li>
+<p><a href="https://coreos.com/blog/the-prometheus-operator.html?utm_source=blog&amp;utm_medium=referral">Prometheus</a></p>
+</li>
+<li>
+<p><a href="https://akomljen.com/kubernetes-elasticsearch-operator/">Elasticsearch</a></p>
+</li>
+<li>
+<p><a href="http://info.crunchydata.com/blog/postgres-operator-for-kubernetes">PostgreSQL</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Service Brokers</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.openservicebrokerapi.org/">Open Service Broker API</a></p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/docs/concepts/service-catalog/">Service Catalog</a></p>
+</li>
+<li>
+<p><a href="https://cloud.spring.io/spring-cloud-open-service-broker/">Spring Cloud Open Service Broker</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Initializers</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://ahmet.im/blog/initializers/">How Kubernetes Initializers work</a></p>
+</li>
+<li>
+<p><a href="https://github.com/kelseyhightower/kubernetes-initializer-tutorial/blob/master/docs/best-practices.md">K8s Initializers can attach a service mesh automatically</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Istio</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://istio.io/">Istio Service Mesh</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="references">References</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1085,9 +1418,11 @@ Get rid of Hystrix and turn to Istio for this purpose</p>
 </div>
 </div>
 </div>
+</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-27 12:13:43 CEST
+Version 0.1<br>
+Last updated 2018-04-28 12:32:57 CEST
 </div>
 </div>
 </body>

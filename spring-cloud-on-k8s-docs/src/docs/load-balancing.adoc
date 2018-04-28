@@ -1,12 +1,17 @@
 == Load Balancing ==
 Load-Balancing in Kubernetes is defined by multiple factors.
 There is no load balancer in Kubernetes itself. Instead, when creating a service of type LoadBalancer, a cloud
-provider's load-balancer is provisioned as the Kubernetes service.
-This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
-configuration AWS' Elastic Load Balancer is completely different to Azure, IBM, or the Google load
-balancers.
+provider's load-balancer is provisioned as the Kubernetes service. That is the reason why it is currently not
+possible for Minikube to create a resource of type LoadBalancer
+(see https://github.com/kubernetes/minikube/issues/384[Loadbalancer support] for a solution)
 
+This makes the behavior of the load-balancer dependent on the cloud that is used underneath. Also in terms of
+configuration, configuring an AWS' Elastic Load Balancer is completely different to configuring
+load-balancers on Azure, IBM, or on the Google cloud.
+
+
+=== Open Issues ===
 TODO:
 
-* Ribbon
+* Ribbon -> drop ribbon in the long run
 * Client side load-balancing with Istio

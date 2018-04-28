@@ -1,13 +1,16 @@
-= Spring Cloud on Kubernetes =
+= Spring Cloud on Kubernetes
+Michael Rumpf <michael _at_ rumpfonline.de>
+v0.1, 2018
+
 ifndef::imagesdir[:imagesdir: images]
 
 include::overview.adoc[]
 
 include::containerization.adoc[]
 
-include::kubernetes.adoc[]
-
 include::deployment.adoc[]
+
+include::configuration.adoc[]
 
 include::service-discovery-registration.adoc[]
 
@@ -19,8 +22,10 @@ include::monitoring.adoc[]
 
 include::security.adoc[]
 
+include::database-migration.adoc[]
+
 include::chaos-engineering.adoc[]
 
-include::references.adoc[]
+include::appendix.adoc[]
 
 
