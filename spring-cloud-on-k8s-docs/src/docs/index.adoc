@@ -22,12 +22,12 @@ include::load-balancing.adoc[]
 
 include::circuit-breaker.adoc[]
 
-include::monitoring.adoc[]
-
 include::security.adoc[]
+
+include::administration.adoc[]
+
+include::monitoring.adoc[]
 
 include::chaos-engineering.adoc[]
 
 include::appendix.adoc[]
-
-

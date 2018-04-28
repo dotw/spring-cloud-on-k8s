@@ -1,0 +1,6 @@
+== Administration
+Therte are several tools for administrative access, like the Spring Boot Admin tool for example.
+
+=== Open Issues
+
+* How to restrict access to applications when using SBA?
