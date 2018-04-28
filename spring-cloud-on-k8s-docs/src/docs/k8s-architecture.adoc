@@ -8,6 +8,8 @@ Assumption:
 * Namespaces per environment (test, staging, prod, ...)
 * One or more environments in one K8s cluster (K8s cluster #1: prod, K8s cluster #2: test & staging)
 * Multiple clusters communicating with each other (Microservice dependencies from one cluster into another)
+** Using Ingress
+** or API Gateways from the cloud
 * Using Istio to prevent microservices from calling each other inside one cluster
 
 === Open Issues
