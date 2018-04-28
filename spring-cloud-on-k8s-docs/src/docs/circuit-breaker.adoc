@@ -9,3 +9,6 @@ Idea:
 
 * Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
 of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by
+
+=== Open Issues
+TODO

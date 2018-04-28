@@ -10,3 +10,5 @@ Prerequisite: Spring Boot 2.0 with Micrometer
 === OpenTracing ===
 TODO: Istio also supports OpenTracing!
 
+=== Open Issues
+TODO

@@ -545,11 +545,21 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#open-issues">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#deployment">Deployment</a></li>
+<li><a href="#deployment">Deployment</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-2">Open Issues</a></li>
+</ul>
+</li>
+<li><a href="#database-migration">Database Migration</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-3">Open Issues</a></li>
+</ul>
+</li>
+<li><a href="#kubernetes-architecture">Kubernetes Architecture</a></li>
 <li><a href="#configuration-2">Configuration</a>
 <ul class="sectlevel2">
 <li><a href="#migration-path-2">Migration Path</a></li>
-<li><a href="#open-issues-2">Open Issues</a></li>
+<li><a href="#open-issues-4">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a>
@@ -560,25 +570,34 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#service-discovery">Service Discovery</a></li>
 <li><a href="#feign">Feign</a></li>
 <li><a href="#migration-steps">Migration Steps</a></li>
+<li><a href="#open-issues-5">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#load-balancing">Load Balancing</a>
 <ul class="sectlevel2">
-<li><a href="#open-issues-3">Open Issues</a></li>
+<li><a href="#open-issues-6">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#circuit-breaker">Circuit Breaker</a></li>
+<li><a href="#circuit-breaker">Circuit Breaker</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-7">Open Issues</a></li>
+</ul>
+</li>
 <li><a href="#monitoring">Monitoring</a>
 <ul class="sectlevel2">
 <li><a href="#prometheus">Prometheus</a></li>
 <li><a href="#opentracing">OpenTracing</a></li>
+<li><a href="#open-issues-8">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#security">Security</a></li>
-<li><a href="#database-migration">Database Migration</a></li>
+<li><a href="#security">Security</a>
+<ul class="sectlevel2">
+<li><a href="#open-issues-9">Open Issues</a></li>
+</ul>
+</li>
 <li><a href="#chaos-engineering">Chaos Engineering</a>
 <ul class="sectlevel2">
-<li><a href="#open-issues-4">Open Issues</a></li>
+<li><a href="#open-issues-10">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#appendix">Appendix</a>
@@ -800,8 +819,8 @@ a special readiness implementation it could override the ReadinessIndicator and 
 <h3 id="build-process">Build Process</h3>
 <div class="paragraph">
 <p>The build process takes the latest available Java Docker base image and creates an application specific image
-out of it. It must be possible to trigger this process outside of the application deployment process to be able
-to update the application images by using a new Java base images in case of security issues.</p>
+on top of it. It must be possible to trigger this process outside of the application deployment process to be able
+to update the application images by using a new Java base images in case of any security issues.</p>
 </div>
 </div>
 <div class="sect2">
@@ -858,8 +877,10 @@ for both, readiness and liveness.</p>
 <p>Blue Green Deployments</p>
 </li>
 <li>
-<p>Dark Launch
-*</p>
+<p>Dark Launch</p>
+</li>
+<li>
+<p>Runtime Config Updates</p>
 </li>
 <li>
 <p>&#8230;&#8203;</p>
@@ -885,6 +906,59 @@ for both, readiness and liveness.</p>
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="open-issues-2">Open Issues</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="database-migration">Database Migration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For database migrations Liquibase is used. Liquibase scripts are part of the application package and
+a special application mode makes sure that the scripts are executed from out of the deployment package.</p>
+</div>
+<div class="sect2">
+<h3 id="open-issues-3">Open Issues</h3>
+<div class="paragraph">
+<p>TODO: Liquibase/Flyway migrations are part of the application delivery package</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="kubernetes-architecture">Kubernetes Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Kubernetes platform architecture significantly influences how Spring Cloud works on Kubernetes and whether
+the Spring Cloud Kubernetes incubation project can be used out of the box or whether this implementation must be
+tweaked further.</p>
+</div>
+<div class="paragraph">
+<p>Assumption:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Namespaces per environment (test, staging, prod, &#8230;&#8203;)</p>
+</li>
+<li>
+<p>One or more environments in one K8s cluster (K8s cluster #1: prod, K8s cluster #2: test &amp; staging)</p>
+</li>
+<li>
+<p>Multiple clusters communicating with each other (Microservice dependencies from one cluster into another)</p>
+</li>
+<li>
+<p>Using Istio to prevent microservices from calling each other inside one cluster</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>TODO: &#8230;&#8203;.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -897,6 +971,12 @@ will not survive the Kubernetes migration in the long run. Instead a more genera
 <div class="paragraph">
 <p>The Spring Cloud Kubernetes incubator project extends the Spring Boot hierarchy of PropertySources by
 another one that gets populated from the Kubernetes ConfigMaps and the Kubernetes Secrets.</p>
+</div>
+<div class="paragraph">
+<p>The Spring Cloud Kubernetes Config implementation triggers the reload of the @RefreshScope annotated beans
+when a change in the ConfigMap is detected. The <code>metadata.name</code> of the ConfigMap must be set to the
+<code>spring.application.name</code> for the Spring Cloud Kubernetes Config implementation to load the ConfigMap as a
+<code>PropertySource</code> into the application <code>Environment</code>.</p>
 </div>
 <div class="sect2">
 <h3 id="migration-path-2">Migration Path</h3>
@@ -923,11 +1003,10 @@ another one that gets populated from the Kubernetes ConfigMaps and the Kubernete
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
-<p>Bake the config file into the Docker image as part of the build process (12-factor apps, all config via
-the process environment)</p>
+<p>Put the environment specific properties into a ConfigMap as part of the deployment</p>
 </li>
 <li>
-<p>A config update will be a re-deployment!?</p>
+<p>Allow updates to the ConfigMap at runtime</p>
 </li>
 </ol>
 </div>
@@ -936,9 +1015,39 @@ the process environment)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="open-issues-2">Open Issues</h3>
-<div class="paragraph">
-<p>TODO: How to handle runtime updates of the configuration when it is part of the process environment?</p>
+<h3 id="open-issues-4">Open Issues</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>How to handle runtime updates of the configuration when it is part of the process environment?</p>
+</li>
+<li>
+<p>What backends are available for the ConfigMaps resources and how does the process look like to work with ConfigMap
+changes?</p>
+</li>
+<li>
+<p>Use Spring Cloud Kubernetes Config or configure the ConfigMap to put the properties into the environment of the pod?</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables</a></p>
+</li>
+<li>
+<p>Putting it into the environment has the issue that the process needs to be restarted to make changes available to
+the process.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>When a change to the environment specific properties triggers an automatic config update, how to define whether a
+service is restarted or whether the /refresh endpoint is called only? This depends on the property, e.g. changing
+the webcontainer&#8217;s HTTP port requires a restart, whereas a Hystrix timeout change can be applied on the fly.</p>
+</li>
+<li>
+<p>What about text or binary files in the config? Excel configuration files, WSDL files, &#8230;&#8203;</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1114,6 +1223,12 @@ Load-balancing is covered in depth in the chapter <a href="#load-balancing">Load
 </table>
 </div>
 </div>
+<div class="sect2">
+<h3 id="open-issues-5">Open Issues</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1132,7 +1247,7 @@ configuration, configuring an AWS' Elastic Load Balancer is completely different
 load-balancers on Azure, IBM, or on the Google cloud.</p>
 </div>
 <div class="sect2">
-<h3 id="open-issues-3">Open Issues</h3>
+<h3 id="open-issues-6">Open Issues</h3>
 <div class="paragraph">
 <p>TODO:</p>
 </div>
@@ -1176,6 +1291,12 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 </li>
 </ul>
 </div>
+<div class="sect2">
+<h3 id="open-issues-7">Open Issues</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1196,6 +1317,12 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <p>TODO: Istio also supports OpenTracing!</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="open-issues-8">Open Issues</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1204,17 +1331,11 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <div class="paragraph">
 <p>TODO: Vault</p>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="database-migration">Database Migration</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="open-issues-9">Open Issues</h3>
 <div class="paragraph">
-<p>For database migrations Liquibase is used. Liquibase scripts are part of the application package and
-a special application mode makes sure that the scripts are executed from out of the deployment package.</p>
+<p>TODO</p>
 </div>
-<div class="paragraph">
-<p>TODO: Liquibase migrations are part of the application delivery package</p>
 </div>
 </div>
 </div>
@@ -1260,7 +1381,7 @@ order to find issues where the system is not able to deal properly with failures
 </ul>
 </div>
 <div class="sect2">
-<h3 id="open-issues-4">Open Issues</h3>
+<h3 id="open-issues-10">Open Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1285,7 +1406,7 @@ is gaining significant traction all over the software industry.</p>
 </div>
 <div class="paragraph">
 <p>This section covers several aspects of the Kubernetes ecosystem which seem to be useful when building a
-platform as a service on top of Kubernetes but is :</p>
+platform as a service on top of Kubernetes:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1370,6 +1491,19 @@ platform as a service on top of Kubernetes but is :</p>
 </ul>
 </div>
 </li>
+<li>
+<p>Draft</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/Azure/draft">Azure Draft</a></p>
+</li>
+<li>
+<p><a href="https://kubernetes.io/blog/2017/05/draft-kubernetes-container-development">Draft: Kubernetes container development made easy</a></p>
+</li>
+</ul>
+</div>
+</li>
 </ul>
 </div>
 </div>
@@ -1422,7 +1556,7 @@ platform as a service on top of Kubernetes but is :</p>
 <div id="footer">
 <div id="footer-text">
 Version 0.1<br>
-Last updated 2018-04-28 12:32:57 CEST
+Last updated 2018-04-28 13:10:29 CEST
 </div>
 </div>
 </body>

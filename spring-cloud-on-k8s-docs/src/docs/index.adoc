@@ -10,6 +10,8 @@ include::containerization.adoc[]
 
 include::deployment.adoc[]
 
+include::database-migration.adoc[]
+
 include::k8s-architecture.adoc[]
 
 include::configuration.adoc[]
@@ -23,8 +25,6 @@ include::circuit-breaker.adoc[]
 include::monitoring.adoc[]
 
 include::security.adoc[]
-
-include::database-migration.adoc[]
 
 include::chaos-engineering.adoc[]
 

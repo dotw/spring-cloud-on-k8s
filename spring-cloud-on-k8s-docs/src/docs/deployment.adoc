@@ -14,3 +14,6 @@ Important concepts:
 * Forward compatibility of database schema updates
 * Backwards compatibility of API changes, i.e. no breaking changes
 * ....
+
+=== Open Issues
+TODO

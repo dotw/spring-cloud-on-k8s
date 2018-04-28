@@ -80,3 +80,6 @@ work with Feign? Which namespace name is used? Can this be configured?
 . Remove dependencies to Ribbon, Feign and Hystrix
 
 NOTE: Load-balancing is covered in depth in the chapter <<Load Balancing>>
+
+=== Open Issues
+TODO
