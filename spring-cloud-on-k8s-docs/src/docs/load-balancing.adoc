@@ -9,9 +9,18 @@ This makes the behavior of the load-balancer dependent on the cloud that is used
 configuration, configuring an AWS' Elastic Load Balancer is completely different to configuring
 load-balancers on Azure, IBM, or on the Google cloud.
 
+Instead the client side load-balancing features are provided by Istio's Envoy proxy. That makes client side
+load-balancing available to all types of applications, not only Java based Spring Boot microservices. From a Spring
+Boot application perspective, the Ribbon library can be dropped completely.
+
+=== Migration Path
+
+. Switch to DNS based service discovery (see chapter <<Service Registration & Discovery>>)
+. Disable Ribbon and let Istio step in to do client side load-balancing
 
 === Open Issues ===
-TODO:
 
-* Ribbon -> drop ribbon in the long run
-* Client side load-balancing with Istio
+* Which load-balancing policy should be used?
+** Random
+** Round-Robin
+** Weighted least request (similar to response time as used by Ribbon)

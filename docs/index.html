@@ -545,13 +545,16 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#open-issues">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#deployment">Deployment</a>
+<li><a href="#database-migration">Database Migration</a>
 <ul class="sectlevel2">
 <li><a href="#open-issues-2">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#database-migration">Database Migration</a>
+<li><a href="#deployment">Deployment</a>
 <ul class="sectlevel2">
+<li><a href="#deployment-process-tooling">Deployment Process &amp; Tooling</a></li>
+<li><a href="#deployment-of-a-microservice">Deployment of a microservice</a></li>
+<li><a href="#deployment-of-configuration-changes">Deployment of configuration changes</a></li>
 <li><a href="#open-issues-3">Open Issues</a></li>
 </ul>
 </li>
@@ -581,6 +584,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#load-balancing">Load Balancing</a>
 <ul class="sectlevel2">
+<li><a href="#migration-path-4">Migration Path</a></li>
 <li><a href="#open-issues-7">Open Issues</a></li>
 </ul>
 </li>
@@ -600,16 +604,22 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#open-issues-10">Open Issues</a></li>
 </ul>
 </li>
+<li><a href="#logging">Logging</a>
+<ul class="sectlevel2">
+<li><a href="#migration-path-5">Migration Path</a></li>
+<li><a href="#open-issues-11">Open Issues</a></li>
+</ul>
+</li>
 <li><a href="#monitoring">Monitoring</a>
 <ul class="sectlevel2">
 <li><a href="#prometheus">Prometheus</a></li>
 <li><a href="#opentracing">OpenTracing</a></li>
-<li><a href="#open-issues-11">Open Issues</a></li>
+<li><a href="#open-issues-12">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#chaos-engineering">Chaos Engineering</a>
 <ul class="sectlevel2">
-<li><a href="#open-issues-12">Open Issues</a></li>
+<li><a href="#open-issues-13">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#appendix">Appendix</a>
@@ -880,32 +890,70 @@ for both, readiness and liveness.</p>
 </div>
 </div>
 <div class="sect1">
+<h2 id="database-migration">Database Migration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Database migration scripts are part of the Java application package and
+a special application mode (synchronous command line application) makes sure that the scripts are executed
+from out of the deployment package in a synchronous way. The reason for that is that some database migrations
+can take along time and running that as part of the application startup is not an option because the Kubernetes
+readiness and liveness probes would need to be re-configured in order for such long startups to work without
+Kubernetes attempting to shutdown the application again when the readiness timeout is reached.</p>
+</div>
+<div class="paragraph">
+<p>The goal is that database migration scripts are an inherent part of a microservice release and have the same release
+process as the application itself.</p>
+</div>
+<div class="paragraph">
+<p>In the Java world, Liquibase is used and there is a command-line application which simply executes the migration
+scripts in a synchronous way and terminates after that is finished.</p>
+</div>
+<div class="sect2">
+<h3 id="open-issues-2">Open Issues</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>Liquibase as part of the application is not technology agnostic! &#8658; How to do that in NodeJS applications?</p>
+</li>
+<li>
+<p>Idea: Do not include the Liquibase Library as part of the application, but make this an external triggered tool
+which simply takes the migration scripts from the application archive in a standarduzed way (db/migrations/*.sql)</p>
+</li>
+<li>
+<p>The tool could check whether there is a folder "db/migrations/liquibase" (or "db/migrations/flyway") as part of the
+application archive (JAR, ZIP, &#8230;&#8203;) and if it finds such a folder, Liquibase/Flyway coudl be started to
+execute the database migration process.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="deployment">Deployment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO: &#8230;&#8203;</p>
+<p>The topic deployment can be split into different aspects</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Canary</p>
+<p>Overall deployment process</p>
 </li>
 <li>
-<p>Blue Green Deployments</p>
+<p>Deployment tooling to support single steps and/or the whole process</p>
 </li>
 <li>
-<p>Dark Launch</p>
+<p>Deployment of a microservice</p>
 </li>
 <li>
-<p>Runtime Config Updates</p>
-</li>
-<li>
-<p>&#8230;&#8203;</p>
+<p>Deployment of configuration changes</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Important concepts:</p>
+<p>There are some fundamental concepts which need to be applied to microservices in order to reduce the
+downtime of the distributed system.</p>
 </div>
 <div class="ulist">
 <ul>
@@ -918,36 +966,79 @@ for both, readiness and liveness.</p>
 <li>
 <p>Backwards compatibility of API changes, i.e. no breaking changes</p>
 </li>
-<li>
-<p>&#8230;&#8203;.</p>
-</li>
 </ul>
 </div>
 <div class="sect2">
-<h3 id="open-issues-2">Open Issues</h3>
+<h3 id="deployment-process-tooling">Deployment Process &amp; Tooling</h3>
 <div class="paragraph">
-<p>TODO:
-* Draft: <a href="https://github.com/Azure/draft" class="bare">https://github.com/Azure/draft</a>
-* Might Forge be an option: <a href="https://forge.sh/?" class="bare">https://forge.sh/?</a>
-* Which tools to implement the deployment process?
-<strong> Jenkins X
-</strong> Spinnaker
-** &#8230;&#8203;</p>
+<p>TODO</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Jenkins X</p>
+</li>
+<li>
+<p>Spinnaker</p>
+</li>
+</ul>
 </div>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="database-migration">Database Migration</h2>
-<div class="sectionbody">
+<div class="sect2">
+<h3 id="deployment-of-a-microservice">Deployment of a microservice</h3>
 <div class="paragraph">
-<p>For database migrations Liquibase is used. Liquibase scripts are part of the application package and
-a special application mode makes sure that the scripts are executed from out of the deployment package.</p>
+<p>TODO</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Canary</p>
+</li>
+<li>
+<p>Blue Green Deployments</p>
+</li>
+<li>
+<p>Dark Launch</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deployment-of-configuration-changes">Deployment of configuration changes</h3>
+<div class="paragraph">
+<p>See chapter <a href="#configuration">Configuration</a> for details on how a configuration change is deployed in Kubernetes.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="open-issues-3">Open Issues</h3>
 <div class="paragraph">
-<p>TODO: Liquibase/Flyway migrations are part of the application delivery package</p>
+<p>TODO:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Draft: <a href="https://github.com/Azure/draft" class="bare">https://github.com/Azure/draft</a></p>
+</li>
+<li>
+<p>Might Forge be an option: <a href="https://forge.sh/?" class="bare">https://forge.sh/?</a></p>
+</li>
+<li>
+<p>Which tools to implement the deployment process?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Jenkins X</p>
+</li>
+<li>
+<p>Spinnaker</p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1089,16 +1180,16 @@ microservice specific Git config repository, attached as a
 <a href="https://kubernetes.io/docs/concepts/storage/volumes/#gitrepo">gitRepo</a> volume to the pod.</p>
 </div>
 <div class="paragraph">
-<p>That means each commit to the Got repository leads to a rolling restart of the pods. The pre-requisite for this is
+<p>That means each commit to the Git repository leads to a rolling restart of the pods. The pre-requisite for this is
 that the configuration change can be done in a forward compatible way.</p>
 </div>
 <div class="paragraph">
 <p>By putting all config map entries into the environment of the process, we do not need the Spring Cloud Kubernetes
 Config implementation to support ConfigMaps as PropertySource, instead the Spring Boot standard could be used, which
-already tales properties out of the process' system envvironment.</p>
+already takes properties out of the process' system environment.</p>
 </div>
 <div class="paragraph">
-<p>TODO:</p>
+<p>This does not work out of the box yet, it still needs some effort to get it working out of the box:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1172,40 +1263,10 @@ already tales properties out of the process' system envvironment.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>How to handle runtime updates of the configuration when it is part of the process environment?</p>
-</li>
-<li>
-<p>What backends are available for the ConfigMap resources and how does the process look like to work with ConfigMap
-changes?</p>
-</li>
-<li>
-<p>Use Spring Cloud Kubernetes Config or configure the ConfigMap to put the properties into the environment of the pod?</p>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables</a></p>
-</li>
-<li>
-<p>Putting it into the environment has the issue that the process needs to be restarted to make changes available to
-the process.</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p>When a change to the environment specific properties triggers an automatic config update, how to define whether a
-service is restarted or whether the /refresh endpoint is called only? This depends on the property, e.g. changing
-the webcontainer&#8217;s HTTP port requires a restart, whereas a Hystrix timeout change can be applied on the fly.</p>
-</li>
-<li>
 <p>What about text or binary files in the config? Excel configuration files, WSDL files, &#8230;&#8203;</p>
 </li>
 <li>
-<p>Shall we ignore the Spring Boot refresh mechanism and do a restart for all config changes so that there are no
-differences between Spring Boot and other stacks?</p>
-</li>
-<li>
-<p>Do we need to switch from YAML to properties?</p>
+<p>Do we need to switch from YAML to properties? Do ConfigMaps support reading properties from YAML?</p>
 </li>
 <li>
 <p>How to deal with stable/maintenance branches?</p>
@@ -1347,13 +1408,14 @@ Cloud / Netflix OSS world to Kubernetes:</p>
 <div class="sect2">
 <h3 id="migration-steps">Migration Steps</h3>
 <div class="paragraph">
-<p>TODO: Define the exact steps</p>
+<p>The following steps describe the migration process for Spring Boot/Cloud microservices:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
 <p>Add the spring-cloud-kubernetes discovery client as a dependency to perform a lookup via the DNS name instead of
-the list of Eureka defined instances. Does <a href="https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery">spring-cloud-kubernetes-discovery</a>
+the list of Eureka defined instances. Does
+<a href="https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery">spring-cloud-kubernetes-discovery</a>
 work with Feign? Which namespace name is used? Can this be configured?</p>
 </li>
 <li>
@@ -1370,6 +1432,9 @@ work with Feign? Which namespace name is used? Can this be configured?</p>
 </li>
 <li>
 <p>Remove dependencies to Ribbon, Feign and Hystrix</p>
+</li>
+<li>
+<p>Drop the Spring Cloud Kubernetes Discovery dependency</p>
 </li>
 </ol>
 </div>
@@ -1389,7 +1454,7 @@ Load-balancing is covered in depth in the chapter <a href="#load-balancing">Load
 <div class="sect2">
 <h3 id="open-issues-6">Open Issues</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>There are currently no open issues in this context.</p>
 </div>
 </div>
 </div>
@@ -1409,18 +1474,43 @@ possible for Minikube to create a resource of type LoadBalancer
 configuration, configuring an AWS' Elastic Load Balancer is completely different to configuring
 load-balancers on Azure, IBM, or on the Google cloud.</p>
 </div>
+<div class="paragraph">
+<p>Instead the client side load-balancing features are provided by Istio&#8217;s Envoy proxy. That makes client side
+load-balancing available to all types of applications, not only Java based Spring Boot microservices. From a Spring
+Boot application perspective, the Ribbon library can be dropped completely.</p>
+</div>
+<div class="sect2">
+<h3 id="migration-path-4">Migration Path</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Switch to DNS based service discovery (see chapter <a href="#service-registration-discovery">Service Registration &amp; Discovery</a>)</p>
+</li>
+<li>
+<p>Disable Ribbon and let Istio step in to do client side load-balancing</p>
+</li>
+</ol>
+</div>
+</div>
 <div class="sect2">
 <h3 id="open-issues-7">Open Issues</h3>
-<div class="paragraph">
-<p>TODO:</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p>Ribbon &#8594; drop ribbon in the long run</p>
+<p>Which load-balancing policy should be used?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Random</p>
 </li>
 <li>
-<p>Client side load-balancing with Istio</p>
+<p>Round-Robin</p>
+</li>
+<li>
+<p>Weighted least request (similar to response time as used by Ribbon)</p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>
@@ -1454,6 +1544,10 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>Comparison of Hystrix and Istio
+<a href="http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/" class="bare">http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/</a></p>
+</div>
 <div class="sect2">
 <h3 id="open-issues-8">Open Issues</h3>
 <div class="paragraph">
@@ -1465,6 +1559,25 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <div class="sect1">
 <h2 id="security">Security</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>Topics:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Encrypted passwords provided by the Spring Cloud config server</p>
+</li>
+<li>
+<p>Password &amp; certificate rotation</p>
+</li>
+<li>
+<p>certificate storage</p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p>TODO: Vault</p>
 </div>
@@ -1504,6 +1617,39 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 </div>
 </div>
 <div class="sect1">
+<h2 id="logging">Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Switch Logback configuration to log all different log types to stdout (12 factor).
+Each type of a log statement must be in JSON format to allow an easy push of the file to the ELK/EFK middleware.
+Each log type needs an explicit field 'type' to let the forwarder (Fluentd or Logstash) to determine which index to use
+in Elasticsearch for example.</p>
+</div>
+<div class="sect2">
+<h3 id="migration-path-5">Migration Path</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add a logback.xml as part of the Docker container build process to override any application packaged config files</p>
+</li>
+<li>
+<p>Remove all application specific</p>
+</li>
+<li>
+<p>Provide a</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="open-issues-11">Open Issues</h3>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="monitoring">Monitoring</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -1520,11 +1666,53 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <div class="paragraph">
 <p>TODO: Istio also supports OpenTracing!</p>
 </div>
+<div class="paragraph">
+<p>JaegerTracing: <a href="https://www.jaegertracing.io/" class="bare">https://www.jaegertracing.io/</a></p>
+</div>
+<div class="paragraph">
+<p>Support for all relevant technology stacks!</p>
+</div>
+<div class="paragraph">
+<p>The challenge is that with each requests a set of headers "X-b3-&#8230;&#8203;" (Zipkin only?) are propagated between the microservices.
+Those properties need to be added to the thread context and sent out to any downstream services.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.jaegertracing.io/docs/client-libraries/" class="bare">https://www.jaegertracing.io/docs/client-libraries/</a></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Go</p>
+</li>
+<li>
+<p>Java</p>
+</li>
+<li>
+<p>Node.js</p>
+</li>
+<li>
+<p>Python</p>
+</li>
+<li>
+<p>C++</p>
+</li>
+<li>
+<p>C#</p>
+</li>
+</ul>
+</div>
 </div>
 <div class="sect2">
-<h3 id="open-issues-11">Open Issues</h3>
+<h3 id="open-issues-12">Open Issues</h3>
 <div class="paragraph">
 <p>TODO</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How does all of that fit into Micrometer.io / Spring Boot 2.x changes?</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1571,7 +1759,7 @@ order to find issues where the system is not able to deal properly with failures
 </ul>
 </div>
 <div class="sect2">
-<h3 id="open-issues-12">Open Issues</h3>
+<h3 id="open-issues-13">Open Issues</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1703,7 +1891,7 @@ platform as a service on top of Kubernetes:</p>
 <div id="footer">
 <div id="footer-text">
 Version 0.1<br>
-Last updated 2018-04-30 10:38:21 CEST
+Last updated 2018-04-30 15:41:15 CEST
 </div>
 </div>
 </body>

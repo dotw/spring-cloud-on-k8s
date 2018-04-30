@@ -1,22 +1,40 @@
 == Deployment ==
+The topic deployment can be split into different aspects
 
-TODO: ...
+* Overall deployment process
+* Deployment tooling to support single steps and/or the whole process
+* Deployment of a microservice
+* Deployment of configuration changes
 
-* Canary
-* Blue Green Deployments
-* Dark Launch
-* Runtime Config Updates
-* ...
-
-Important concepts:
+There are some fundamental concepts which need to be applied to microservices in order to reduce the
+downtime of the distributed system.
 
 * Zero Downtime Deployments
 * Forward compatibility of database schema updates
 * Backwards compatibility of API changes, i.e. no breaking changes
-* ....
+
+=== Deployment Process & Tooling
+TODO
+
+* Jenkins X
+* Spinnaker
+
+
+=== Deployment of a microservice
+TODO
+
+* Canary
+* Blue Green Deployments
+* Dark Launch
+
+
+=== Deployment of configuration changes
+See chapter <<Configuration>> for details on how a configuration change is deployed in Kubernetes.
+
 
 === Open Issues
 TODO:
+
 * Draft: https://github.com/Azure/draft
 * Might Forge be an option: https://forge.sh/?
 * Which tools to implement the deployment process?

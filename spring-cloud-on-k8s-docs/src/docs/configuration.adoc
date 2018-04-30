@@ -61,14 +61,14 @@ pod to start. All this gets triggered by a https://github.com/fabric8io/gitcontr
 microservice specific Git config repository, attached as a
 https://kubernetes.io/docs/concepts/storage/volumes/#gitrepo[gitRepo] volume to the pod.
 
-That means each commit to the Got repository leads to a rolling restart of the pods. The pre-requisite for this is
+That means each commit to the Git repository leads to a rolling restart of the pods. The pre-requisite for this is
 that the configuration change can be done in a forward compatible way.
 
 By putting all config map entries into the environment of the process, we do not need the Spring Cloud Kubernetes
 Config implementation to support ConfigMaps as PropertySource, instead the Spring Boot standard could be used, which
-already tales properties out of the process' system envvironment.
+already takes properties out of the process' system environment.
 
-TODO:
+This does not work out of the box yet, it still needs some effort to get it working out of the box:
 
 * The gitRepo volume change needs to trigger a YAML (or properties) to ConfigMap transformation +
 https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#create-configmaps-from-files
@@ -93,18 +93,6 @@ The migration process
 
 === Open Issues
 
-* How to handle runtime updates of the configuration when it is part of the process environment?
-* What backends are available for the ConfigMap resources and how does the process look like to work with ConfigMap
-changes?
-* Use Spring Cloud Kubernetes Config or configure the ConfigMap to put the properties into the environment of the pod?
-** https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#configure-all-key-value-pairs-in-a-configmap-as-pod-environment-variables
-** Putting it into the environment has the issue that the process needs to be restarted to make changes available to
-the process.
-* When a change to the environment specific properties triggers an automatic config update, how to define whether a
-service is restarted or whether the /refresh endpoint is called only? This depends on the property, e.g. changing
-the webcontainer's HTTP port requires a restart, whereas a Hystrix timeout change can be applied on the fly.
 * What about text or binary files in the config? Excel configuration files, WSDL files, ...
-* Shall we ignore the Spring Boot refresh mechanism and do a restart for all config changes so that there are no
-differences between Spring Boot and other stacks?
-* Do we need to switch from YAML to properties?
+* Do we need to switch from YAML to properties? Do ConfigMaps support reading properties from YAML?
 * How to deal with stable/maintenance branches?

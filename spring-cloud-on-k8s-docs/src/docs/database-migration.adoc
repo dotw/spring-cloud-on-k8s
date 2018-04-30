@@ -1,8 +1,21 @@
-== Database Migration ==
+== Database Migration
+Database migration scripts are part of the Java application package and
+a special application mode (synchronous command line application) makes sure that the scripts are executed
+from out of the deployment package in a synchronous way. The reason for that is that some database migrations
+can take along time and running that as part of the application startup is not an option because the Kubernetes
+readiness and liveness probes would need to be re-configured in order for such long startups to work without
+Kubernetes attempting to shutdown the application again when the readiness timeout is reached.
 
-For database migrations Liquibase is used. Liquibase scripts are part of the application package and
-a special application mode makes sure that the scripts are executed from out of the deployment package.
+The goal is that database migration scripts are an inherent part of a microservice release and have the same release
+process as the application itself.
+
+In the Java world, Liquibase is used and there is a command-line application which simply executes the migration
+scripts in a synchronous way and terminates after that is finished.
 
 === Open Issues
-TODO: Liquibase/Flyway migrations are part of the application delivery package
-
+* Liquibase as part of the application is not technology agnostic! => How to do that in NodeJS applications?
+* Idea: Do not include the Liquibase Library as part of the application, but make this an external triggered tool
+which simply takes the migration scripts from the application archive in a standarduzed way (db/migrations/*.sql)
+* The tool could check whether there is a folder "db/migrations/liquibase" (or "db/migrations/flyway") as part of the
+application archive (JAR, ZIP, ...) and if it finds such a folder, Liquibase/Flyway coudl be started to
+execute the database migration process.

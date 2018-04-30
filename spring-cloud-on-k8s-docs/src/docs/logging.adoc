@@ -1,0 +1,17 @@
+== Logging
+
+Switch Logback configuration to log all different log types to stdout (12 factor).
+Each type of a log statement must be in JSON format to allow an easy push of the file to the ELK/EFK middleware.
+Each log type needs an explicit field 'type' to let the forwarder (Fluentd or Logstash) to determine which index to use
+in Elasticsearch for example.
+
+
+=== Migration Path
+
+. Add a logback.xml as part of the Docker container build process to override any application packaged config files
+. Remove all application specific
+. Provide a
+
+=== Open Issues
+
+TODO

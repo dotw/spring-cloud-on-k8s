@@ -1,4 +1,10 @@
 == Security ==
+Topics:
+
+* Encrypted passwords provided by the Spring Cloud config server
+* Password & certificate rotation
+* certificate storage
+* ...
 
 TODO: Vault
 

@@ -10,5 +10,23 @@ Prerequisite: Spring Boot 2.0 with Micrometer
 === OpenTracing ===
 TODO: Istio also supports OpenTracing!
 
+JaegerTracing: https://www.jaegertracing.io/
+
+Support for all relevant technology stacks!
+
+The challenge is that with each requests a set of headers "X-b3-..." (Zipkin only?) are propagated between the microservices.
+Those properties need to be added to the thread context and sent out to any downstream services.
+
+https://www.jaegertracing.io/docs/client-libraries/
+
+* Go
+* Java
+* Node.js
+* Python
+* C++
+* C#
+
 === Open Issues
 TODO
+
+* How does all of that fit into Micrometer.io / Spring Boot 2.x changes?

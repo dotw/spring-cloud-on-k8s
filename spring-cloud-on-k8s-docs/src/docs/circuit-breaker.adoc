@@ -10,5 +10,9 @@ Idea:
 * Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
 of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by
 
+Comparison of Hystrix and Istio
+http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/
+
+
 === Open Issues
 TODO: See https://github.com/fabric8io/kubeflix[Kubeflix]

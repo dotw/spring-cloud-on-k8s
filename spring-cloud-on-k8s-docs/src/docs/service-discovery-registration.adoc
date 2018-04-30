@@ -67,19 +67,20 @@ When using Feign as a declarative REST client, the following approach could be t
 Cloud / Netflix OSS world to Kubernetes:
 
 === Migration Steps ===
-
-TODO: Define the exact steps
+The following steps describe the migration process for Spring Boot/Cloud microservices:
 
 . Add the spring-cloud-kubernetes discovery client as a dependency to perform a lookup via the DNS name instead of
-the list of Eureka defined instances. Does https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery[spring-cloud-kubernetes-discovery]
+the list of Eureka defined instances. Does
+https://github.com/spring-cloud-incubator/spring-cloud-kubernetes/tree/master/spring-cloud-kubernetes-discovery[spring-cloud-kubernetes-discovery]
 work with Feign? Which namespace name is used? Can this be configured?
 . Disable Hystrix: `spring.cloud.circuit.breaker.enabled=false`
 . Disable Ribbon: `ribbon.eureka.enabled`
 . Use the url parameter in the @FeignClient annotation
 . Convert Feign to using RestTemplate (no API JARs) or Spring Web MVC (using API JARs)
 . Remove dependencies to Ribbon, Feign and Hystrix
+. Drop the Spring Cloud Kubernetes Discovery dependency
 
 NOTE: Load-balancing is covered in depth in the chapter <<Load Balancing>>
 
 === Open Issues
-TODO
+There are currently no open issues in this context.

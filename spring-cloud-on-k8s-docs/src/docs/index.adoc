@@ -8,9 +8,9 @@ include::overview.adoc[]
 
 include::containerization.adoc[]
 
-include::deployment.adoc[]
-
 include::database-migration.adoc[]
+
+include::deployment.adoc[]
 
 include::k8s-architecture.adoc[]
 
@@ -27,6 +27,8 @@ include::security.adoc[]
 include::testing.adoc[]
 
 include::administration.adoc[]
+
+include::logging.adoc[]
 
 include::monitoring.adoc[]
 
