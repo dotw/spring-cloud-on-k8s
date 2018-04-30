@@ -1,5 +1,5 @@
 == Administration
-Therte are several tools for administrative access, like the Spring Boot Admin tool for example.
+There are several tools for administrative access, like the Spring Boot Admin tool for example.
 
 === Open Issues
 
