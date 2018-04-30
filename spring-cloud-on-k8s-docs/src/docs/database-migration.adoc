@@ -3,7 +3,7 @@ In many Java applications database migrations are done via Liquibase or Flyway. 
 tools in the form of a single step in the deployment process, but external to the application (not bundled with the
 Java application). This allows the tools to be used in other toolchains besides Java.
 
-=== DB migration
+=== Migration Process
 
 To achieve this, the location for the migration scripts must be standardized. The suggestion is to expect the following
 folder hierarchy in a release archive:
@@ -21,14 +21,8 @@ migrations for NodeJS applications.
 
 
 === Open Issues
-* Liquibase as part of the application is not technology agnostic! => How to do that in NodeJS applications?
-* Idea: Do not include the Liquibase Library as part of the application, but make this an external triggered tool
-which simply takes the migration scripts from the application archive in a standarduzed way (db/migrations/*.sql)
-* The tool could check whether there is a folder "db/migrations/liquibase" (or "db/migrations/flyway") as part of the
-application archive (JAR, ZIP, ...) and if it finds such a folder, Liquibase/Flyway coudl be started to
-execute the database migration process.
 * How to deal with different database connection strings? This is already solved when a Spring Boot application is used
 There are drawbacks with using the same database configuration for doing database migrations, as the connection
 properties not always fit to long running requests, e.g. the connection timeout for normal application queries
 is usually different than that of long running database migration scripts, which could easily take several hours to
-complete.
+complete. 

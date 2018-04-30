@@ -547,7 +547,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#database-migration">Database Migration</a>
 <ul class="sectlevel2">
-<li><a href="#db-migration">DB migration</a></li>
+<li><a href="#migration-process">Migration Process</a></li>
 <li><a href="#open-issues-2">Open Issues</a></li>
 </ul>
 </li>
@@ -899,7 +899,7 @@ tools in the form of a single step in the deployment process, but external to th
 Java application). This allows the tools to be used in other toolchains besides Java.</p>
 </div>
 <div class="sect2">
-<h3 id="db-migration">DB migration</h3>
+<h3 id="migration-process">Migration Process</h3>
 <div class="paragraph">
 <p>To achieve this, the location for the migration scripts must be standardized. The suggestion is to expect the following
 folder hierarchy in a release archive:</p>
@@ -929,18 +929,6 @@ migrations for NodeJS applications.</p>
 <h3 id="open-issues-2">Open Issues</h3>
 <div class="ulist">
 <ul>
-<li>
-<p>Liquibase as part of the application is not technology agnostic! &#8658; How to do that in NodeJS applications?</p>
-</li>
-<li>
-<p>Idea: Do not include the Liquibase Library as part of the application, but make this an external triggered tool
-which simply takes the migration scripts from the application archive in a standarduzed way (db/migrations/*.sql)</p>
-</li>
-<li>
-<p>The tool could check whether there is a folder "db/migrations/liquibase" (or "db/migrations/flyway") as part of the
-application archive (JAR, ZIP, &#8230;&#8203;) and if it finds such a folder, Liquibase/Flyway coudl be started to
-execute the database migration process.</p>
-</li>
 <li>
 <p>How to deal with different database connection strings? This is already solved when a Spring Boot application is used
 There are drawbacks with using the same database configuration for doing database migrations, as the connection
