@@ -16,4 +16,10 @@ Important concepts:
 * ....
 
 === Open Issues
-TODO
+TODO:
+* Draft: https://github.com/Azure/draft
+* Might Forge be an option: https://forge.sh/?
+* Which tools to implement the deployment process?
+** Jenkins X
+** Spinnaker
+** ...

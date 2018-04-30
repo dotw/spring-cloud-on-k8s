@@ -5,12 +5,12 @@ Migrating a Spring Boot application to Kubernetes, which heavily uses the Spring
 project, is challenging because of the many overlaps and the various ways certain features can be implemented
 in the Kubernetes world.
 
-There is a project in Spring Cloud incubation (formerly * https://spring.fabric8.io[Fabric8]), called
+There is a project in Spring Cloud incubation (developed by https://spring.fabric8.io[Fabric8]), called
 Spring-Cloud-Kubernetes, which tackles a few of those issues,
 but unfortunately it does not cover Istio yet. Istio is aiming to take over more of the Spring Cloud Netflix topics,
 implementing them in a technology agnostic way.
 
-The Spring Cloud Kubernetes project does some assumptions, like all applications are in the same K8s namespace, which
+The Spring Cloud Kubernetes project is based upon some assumptions, like all applications are in the same K8s namespace, which
 might not be the case in more complex Kubernetes setups.
 
 === Feature Overlap ===
@@ -27,10 +27,10 @@ which does not cover Istio because the publishing date of the article pre-dates 
 A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
 ago (Many of the Netflix OSS libraries have been made publicly available in 2012 and were adopted by the Spring
 team in the following years).
-In the light of hybrid clouds and the polyglot workloads that are migrated to those cloud environments, the focus on
+In the light of hybrid clouds and the polyglot workloads, that are migrated to those cloud environments, the focus on
 Java only feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for
-all kind of applications.
+all kind of applications, including legacy applications / not cloud-native.
 
-This documentation also depicts migration paths from the pure Java to a polyglot application world where many
-of the Netflix OSS features are provided out of the platform. A huge benefit would be that platform aspects
+This documentation depicts a migration path from the pure Java to a polyglot application world where many
+of the Netflix OSS features are provided by the platform. A huge benefit would be that platform aspects
 can be removed from application code, leading to cleaner and easier to maintain codebase.

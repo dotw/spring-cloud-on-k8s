@@ -562,6 +562,8 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#configuration-2">Configuration</a>
 <ul class="sectlevel2">
+<li><a href="#background">Background</a></li>
+<li><a href="#solution">Solution</a></li>
 <li><a href="#migration-path-2">Migration Path</a></li>
 <li><a href="#open-issues-5">Open Issues</a></li>
 </ul>
@@ -592,6 +594,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#open-issues-9">Open Issues</a></li>
 </ul>
 </li>
+<li><a href="#testing">Testing</a></li>
 <li><a href="#administration">Administration</a>
 <ul class="sectlevel2">
 <li><a href="#open-issues-10">Open Issues</a></li>
@@ -627,13 +630,13 @@ project, is challenging because of the many overlaps and the various ways certai
 in the Kubernetes world.</p>
 </div>
 <div class="paragraph">
-<p>There is a project in Spring Cloud incubation (formerly * <a href="https://spring.fabric8.io">Fabric8</a>), called
+<p>There is a project in Spring Cloud incubation (developed by <a href="https://spring.fabric8.io">Fabric8</a>), called
 Spring-Cloud-Kubernetes, which tackles a few of those issues,
 but unfortunately it does not cover Istio yet. Istio is aiming to take over more of the Spring Cloud Netflix topics,
 implementing them in a technology agnostic way.</p>
 </div>
 <div class="paragraph">
-<p>The Spring Cloud Kubernetes project does some assumptions, like all applications are in the same K8s namespace, which
+<p>The Spring Cloud Kubernetes project is based upon some assumptions, like all applications are in the same K8s namespace, which
 might not be the case in more complex Kubernetes setups.</p>
 </div>
 <div class="sect2">
@@ -658,13 +661,13 @@ which does not cover Istio because the publishing date of the article pre-dates 
 <p>A lot of Java based applications started adopting the Spring Cloud and especially the Netflix OSS stacks a few years
 ago (Many of the Netflix OSS libraries have been made publicly available in 2012 and were adopted by the Spring
 team in the following years).
-In the light of hybrid clouds and the polyglot workloads that are migrated to those cloud environments, the focus on
+In the light of hybrid clouds and the polyglot workloads, that are migrated to those cloud environments, the focus on
 Java only feels like a misfit, especially to those that started the journey towards Kubernetes as a platform for
-all kind of applications.</p>
+all kind of applications, including legacy applications / not cloud-native.</p>
 </div>
 <div class="paragraph">
-<p>This documentation also depicts migration paths from the pure Java to a polyglot application world where many
-of the Netflix OSS features are provided out of the platform. A huge benefit would be that platform aspects
+<p>This documentation depicts a migration path from the pure Java to a polyglot application world where many
+of the Netflix OSS features are provided by the platform. A huge benefit would be that platform aspects
 can be removed from application code, leading to cleaner and easier to maintain codebase.</p>
 </div>
 </div>
@@ -674,17 +677,18 @@ can be removed from application code, leading to cleaner and easier to maintain 
 <h2 id="containerization">Containerization</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Docker is the standard container technology supported by Kubernetes and provides the basis for a standardized
-application deployment.
+<p>Docker is the standard container technology supported by Kubernetes and provides the basis for standardized
+application deployments.
 However, from a microservice DevOps team perspective, dealing with Docker does not add any value to the
 application from an end-user perspective. The idea is therefore to hide the container technology from the normal
 developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
-require a completely different container setup than for the existing technologies. Such explorative applications
+require a completely different container setup than for the existing technologies. Such prototyping applications
 will probably not be supported in the same way as the established technology stacks at first, which means there
-is more effort to deploy and operate them than for supported technology stacks.</p>
+is more effort to deploy and operate them. But as the best-practices for the new technology are shaping up, a
+blueprint for those applications can be created and thus be supported by the platform as well.</p>
 </div>
 <div class="paragraph">
-<p>The following stacks are quite popular in enterprises today and must be supported:</p>
+<p>The following stacks are quite popular in the enterprise world today:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -714,13 +718,14 @@ is more effort to deploy and operate them than for supported technology stacks.<
 </div>
 <div class="paragraph">
 <p>For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
-business functionality into production.</p>
+business functionality into production without the need to deal with low-level Docker or Kubernetes.</p>
 </div>
 <div class="sect2">
 <h3 id="configuration">Configuration</h3>
 <div class="paragraph">
 <p>Each technology requires different hooks into the container creation process. For example, in Java the max heap
-settings must be configured by the team that is responsible for the microservice, following a DevOps approach.</p>
+settings must be configured by the team that is responsible for the microservice, when following a DevOps approach.
+Additional properties are:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -784,7 +789,8 @@ container and thus can use the full range of TCP ports.</p>
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-How to work with microservices locally on a developer machine when all use the same port? Random port?
+TODO: How to work with multiple microservices locally on a developer machine when all use the same port?
+Random port?
 </td>
 </tr>
 </table>
@@ -810,10 +816,12 @@ possible for the application to override the default. An example for this might 
 some cache warm up after it starts. The Spring Boot application has started its web container and the health
 endpoints returns 200 OK because the database can be reached and there is enough space on the file-system.
 As a last step in the application startup phase it starts populating the cache with entries which might take a
-few minutes to adapt.
-One possibility to implement this would be to provide a different endpoint, e.g. /readiness which calls the
-HealthIndicator as a default, which is also executed by the /health endpoint. When an application has the need for
-a special readiness implementation it could override the ReadinessIndicator and implement a custom logic there.</p>
+few minutes to adapt.</p>
+</div>
+<div class="paragraph">
+<p>One possibility to implement this would be to provide a different endpoint, e.g. <code>/readiness</code> which calls the
+HealthIndicator as a default, which is also executed by the <code>/health</code> endpoint. When an application has the need for
+a special readiness implementation it could override the <code>ReadinessIndicator</code> and implement a custom logic there.</p>
 </div>
 </div>
 <div class="sect3">
@@ -828,8 +836,8 @@ a special readiness implementation it could override the ReadinessIndicator and 
 <h3 id="build-process">Build Process</h3>
 <div class="paragraph">
 <p>The build process takes the latest available Java Docker base image and creates an application specific image
-on top of it. It must be possible to trigger this process outside of the application deployment process to be able
-to update the application images by using a new Java base images in case of any security issues.</p>
+on top of it. It must be possible to trigger this process outside of the application deployment or release process to
+be able to update the application images by using a new Java base images in case of any security issues.</p>
 </div>
 </div>
 <div class="sect2">
@@ -918,7 +926,13 @@ for both, readiness and liveness.</p>
 <div class="sect2">
 <h3 id="open-issues-2">Open Issues</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>TODO:
+* Draft: <a href="https://github.com/Azure/draft" class="bare">https://github.com/Azure/draft</a>
+* Might Forge be an option: <a href="https://forge.sh/?" class="bare">https://forge.sh/?</a>
+* Which tools to implement the deployment process?
+<strong> Jenkins X
+</strong> Spinnaker
+** &#8230;&#8203;</p>
 </div>
 </div>
 </div>
@@ -1001,6 +1015,113 @@ when a change in the ConfigMap is detected. The <code>metadata.name</code> of th
 <code>PropertySource</code> into the application <code>Environment</code>.</p>
 </div>
 <div class="sect2">
+<h3 id="background">Background</h3>
+<div class="paragraph">
+<p>All environment specific configurations are stored in yaml or properties files in a central Git repository, which is
+the backing store for the Spring Cloud Config server.</p>
+</div>
+<div class="paragraph">
+<p>Those files follow a naming pattern:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>application.yml
+application-&lt;spring.profile&gt;.yml
+&lt;spring.application.name&gt;.yml
+&lt;spring.application.name&gt;-&lt;spring.profile&gt;.yml</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>application.yml</code> and <code>application-&lt;spring-profile&gt;.yml</code> can be used to set defaults for all microservices, either
+globally or specific to an environment aka spring-sprofile.
+The number of properties in those global files should be kept at an absolute minimum, because responsibility
+of maintaining those global settings is not clear when multiple teams have access to those files. Ideally
+they are used as a short-term workaround only, e.g. disabling a certain logger for all mciroservices because of data
+privacy concerns.</p>
+</div>
+<div class="paragraph">
+<p>A change to any of the YAML files needs to trigger an automatic step where the configuration is applied to the
+microservice. For Spring Boot Java applications this can be done without having to restart the microservice, because
+the Spring Cloud Kubernetes Config implementation triggers the <code>/refresh</code> endpoint and any changed Spring Bean
+gets automatically reloaded. But for certain properties, a restart of the microservice is required.
+For applications, not using the Spring Boot stack this feature is not available or at least works in a different
+way. The goal must be to map it to the ConfigMap feature of Kubernetes to allow configuration of microservices in
+different technology stacks in the same way.</p>
+</div>
+<div class="paragraph">
+<p>Configuration changes can be applied automatically by doing a refresh or a restart of the microservice, depending
+on what the service supports. In both cases several modes and parameters need to be specified to control the process:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>rolling or phased</strong><br>
+In rolling mode one instance after the other is either restarted or refreshed. Phase means the mode is applied to all
+instances at once.</p>
+</li>
+<li>
+<p><strong>rolling instance delay</strong><br>
+The time to wait when doing rolling refresh or restart for the next instance to begin with.</p>
+</li>
+<li>
+<p><strong>liveness &amp; readiness delay</strong><br>
+During the deployment, a liveness and readiness delay is configured. When applying a configuration change in restart
+mode, the same delay must be taken into account. In refresh mode, this delay might be smaller or not present at all.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="solution">Solution</h3>
+<div class="paragraph">
+<p>For all requirements from above there are already solutions in the Kubernetes world. The refresh mode is ignored by the
+presented solution because it is a Spring Boot Java only feature. Instead, all pods, no matter of what technology are
+treated equally, they will be restarted only.</p>
+</div>
+<div class="paragraph">
+<p>In Kubernetes the solution is a combination of deployment options, container probes, and a special gitcontroller which
+triggers a rolling update when the content of the Git repository changes.</p>
+</div>
+<div class="paragraph">
+<p>A Kubernetes deployment defines how a container is restarted and the container probes define how long to wait for each
+pod to start. All this gets triggered by a <a href="https://github.com/fabric8io/gitcontroller">gitcontroller</a>, which needs the
+microservice specific Git config repository, attached as a
+<a href="https://kubernetes.io/docs/concepts/storage/volumes/#gitrepo">gitRepo</a> volume to the pod.</p>
+</div>
+<div class="paragraph">
+<p>That means each commit to the Got repository leads to a rolling restart of the pods. The pre-requisite for this is
+that the configuration change can be done in a forward compatible way.</p>
+</div>
+<div class="paragraph">
+<p>By putting all config map entries into the environment of the process, we do not need the Spring Cloud Kubernetes
+Config implementation to support ConfigMaps as PropertySource, instead the Spring Boot standard could be used, which
+already tales properties out of the process' system envvironment.</p>
+</div>
+<div class="paragraph">
+<p>TODO:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The gitRepo volume change needs to trigger a YAML (or properties) to ConfigMap transformation<br>
+<a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#create-configmaps-from-files" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#create-configmaps-from-files</a></p>
+</li>
+<li>
+<p>The ConfigMap must to be configured to put all properties into the environment of the process<br>
+<a href="https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#use-configmap-defined-environment-variables-in-pod-commands" class="bare">https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#use-configmap-defined-environment-variables-in-pod-commands</a></p>
+</li>
+<li>
+<p>The fabric8 gitcontroller probably needs to be extended to additionally support those steps<br>
+<a href="https://blog.fabric8.io/additional-kubernetes-controllers-from-fabric8-you-can-use-with-your-microservice-3126a2c4c132" class="bare">https://blog.fabric8.io/additional-kubernetes-controllers-from-fabric8-you-can-use-with-your-microservice-3126a2c4c132</a></p>
+</li>
+<li>
+<p>What is the current state of the discussion?<br>
+<a href="https://github.com/kubernetes/kubernetes/issues/22368" class="bare">https://github.com/kubernetes/kubernetes/issues/22368</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
 <h3 id="migration-path-2">Migration Path</h3>
 <div class="paragraph">
 <p>The migration process</p>
@@ -1014,14 +1135,24 @@ when a change in the ConfigMap is detected. The <code>metadata.name</code> of th
 <li>
 <p>Switch from Eureka first to Config-Server first approach</p>
 </li>
-<li>
-<p>Align the configuration</p>
-</li>
 </ol>
 </div>
 </li>
 <li>
 <p>Phase 2</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Use a microservice specific Git repository where the configuration is stored</p>
+</li>
+<li>
+<p>Merge all settings from application.yml and application-&lt;spring.profile&gt;.yml into the microservice specific files</p>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Phase 3</p>
 <div class="olist loweralpha">
 <ol class="loweralpha" type="a">
 <li>
@@ -1044,7 +1175,7 @@ when a change in the ConfigMap is detected. The <code>metadata.name</code> of th
 <p>How to handle runtime updates of the configuration when it is part of the process environment?</p>
 </li>
 <li>
-<p>What backends are available for the ConfigMaps resources and how does the process look like to work with ConfigMap
+<p>What backends are available for the ConfigMap resources and how does the process look like to work with ConfigMap
 changes?</p>
 </li>
 <li>
@@ -1068,6 +1199,16 @@ the webcontainer&#8217;s HTTP port requires a restart, whereas a Hystrix timeout
 </li>
 <li>
 <p>What about text or binary files in the config? Excel configuration files, WSDL files, &#8230;&#8203;</p>
+</li>
+<li>
+<p>Shall we ignore the Spring Boot refresh mechanism and do a restart for all config changes so that there are no
+differences between Spring Boot and other stacks?</p>
+</li>
+<li>
+<p>Do we need to switch from YAML to properties?</p>
+</li>
+<li>
+<p>How to deal with stable/maintenance branches?</p>
 </li>
 </ul>
 </div>
@@ -1336,6 +1477,15 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 </div>
 </div>
 <div class="sect1">
+<h2 id="testing">Testing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TODO:
+* Telepresence: <a href="https://www.telepresence.io/" class="bare">https://www.telepresence.io/</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="administration">Administration</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1553,7 +1703,7 @@ platform as a service on top of Kubernetes:</p>
 <div id="footer">
 <div id="footer-text">
 Version 0.1<br>
-Last updated 2018-04-28 13:17:11 CEST
+Last updated 2018-04-30 10:38:21 CEST
 </div>
 </div>
 </body>

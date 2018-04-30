@@ -1,14 +1,15 @@
 == Containerization ==
-Docker is the standard container technology supported by Kubernetes and provides the basis for a standardized
-application deployment.
+Docker is the standard container technology supported by Kubernetes and provides the basis for standardized
+application deployments.
 However, from a microservice DevOps team perspective, dealing with Docker does not add any value to the
 application from an end-user perspective. The idea is therefore to hide the container technology from the normal
 developer or DevOps teams and at the same time keep the flexibility to explore new technologies, which might
-require a completely different container setup than for the existing technologies. Such explorative applications
+require a completely different container setup than for the existing technologies. Such prototyping applications
 will probably not be supported in the same way as the established technology stacks at first, which means there
-is more effort to deploy and operate them than for supported technology stacks.
+is more effort to deploy and operate them. But as the best-practices for the new technology are shaping up, a
+blueprint for those applications can be created and thus be supported by the platform as well.
 
-The following stacks are quite popular in enterprises today and must be supported:
+The following stacks are quite popular in the enterprise world today:
 
 * Java
 ** Jakarta EE (e.g. WebSphere Liberty Profile)
@@ -18,12 +19,13 @@ The following stacks are quite popular in enterprises today and must be supporte
 * ...
 
 For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
-business functionality into production.
+business functionality into production without the need to deal with low-level Docker or Kubernetes.
 
 
 === Configuration ===
 Each technology requires different hooks into the container creation process. For example, in Java the max heap
-settings must be configured by the team that is responsible for the microservice, following a DevOps approach.
+settings must be configured by the team that is responsible for the microservice, when following a DevOps approach.
+Additional properties are:
 
 * wait time for becoming ready, i.e. when is application ready to serve requests (readiness in Kubernetes)
 ** initial delay
@@ -46,7 +48,8 @@ By using conventions, each microservice starts its HTTP endpoint at port 80, its
 Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
 container and thus can use the full range of TCP ports.
 
-WARNING: How to work with microservices locally on a developer machine when all use the same port? Random port?
+WARNING: TODO: How to work with multiple microservices locally on a developer machine when all use the same port?
+Random port?
 
 
 === Java ===
@@ -66,9 +69,10 @@ some cache warm up after it starts. The Spring Boot application has started its 
 endpoints returns 200 OK because the database can be reached and there is enough space on the file-system.
 As a last step in the application startup phase it starts populating the cache with entries which might take a
 few minutes to adapt.
-One possibility to implement this would be to provide a different endpoint, e.g. /readiness which calls the
-HealthIndicator as a default, which is also executed by the /health endpoint. When an application has the need for
-a special readiness implementation it could override the ReadinessIndicator and implement a custom logic there.
+
+One possibility to implement this would be to provide a different endpoint, e.g. `/readiness` which calls the
+HealthIndicator as a default, which is also executed by the `/health` endpoint. When an application has the need for
+a special readiness implementation it could override the `ReadinessIndicator` and implement a custom logic there.
 
 
 ==== WebSphere Liberty profile (Jakarta EE) ====
@@ -78,8 +82,8 @@ https://store.docker.com/images/websphere-liberty[IBM WebSphere Application Serv
 
 === Build Process ===
 The build process takes the latest available Java Docker base image and creates an application specific image
-on top of it. It must be possible to trigger this process outside of the application deployment process to be able
-to update the application images by using a new Java base images in case of any security issues.
+on top of it. It must be possible to trigger this process outside of the application deployment or release process to
+be able to update the application images by using a new Java base images in case of any security issues.
 
 
 === Open Issues ===
@@ -94,4 +98,3 @@ extra endpoint because the service might be operational, i.e. live, but not read
 for both, readiness and liveness.
 * Exact definition of the build process
 * How to make sure that microservices can easily be used locally without forcing them to run minikube
-

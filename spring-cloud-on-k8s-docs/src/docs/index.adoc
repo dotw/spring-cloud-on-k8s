@@ -24,6 +24,8 @@ include::circuit-breaker.adoc[]
 
 include::security.adoc[]
 
+include::testing.adoc[]
+
 include::administration.adoc[]
 
 include::monitoring.adoc[]
