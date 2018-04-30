@@ -548,6 +548,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#database-migration">Database Migration</a>
 <ul class="sectlevel2">
 <li><a href="#migration-process">Migration Process</a></li>
+<li><a href="#migration-path-2">Migration Path</a></li>
 <li><a href="#open-issues-2">Open Issues</a></li>
 </ul>
 </li>
@@ -561,6 +562,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#kubernetes-architecture">Kubernetes Architecture</a>
 <ul class="sectlevel2">
+<li><a href="#multi-tenancy">Multi Tenancy</a></li>
 <li><a href="#open-issues-4">Open Issues</a></li>
 </ul>
 </li>
@@ -568,13 +570,13 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel2">
 <li><a href="#background">Background</a></li>
 <li><a href="#solution">Solution</a></li>
-<li><a href="#migration-path-2">Migration Path</a></li>
+<li><a href="#migration-path-3">Migration Path</a></li>
 <li><a href="#open-issues-5">Open Issues</a></li>
 </ul>
 </li>
 <li><a href="#service-registration-discovery">Service Registration &amp; Discovery</a>
 <ul class="sectlevel2">
-<li><a href="#migration-path-3">Migration Path</a></li>
+<li><a href="#migration-path-4">Migration Path</a></li>
 <li><a href="#per-instance-access">Per Instance Access</a></li>
 <li><a href="#service-registration">Service Registration</a></li>
 <li><a href="#service-discovery">Service Discovery</a></li>
@@ -585,7 +587,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#load-balancing">Load Balancing</a>
 <ul class="sectlevel2">
-<li><a href="#migration-path-4">Migration Path</a></li>
+<li><a href="#migration-path-5">Migration Path</a></li>
 <li><a href="#open-issues-7">Open Issues</a></li>
 </ul>
 </li>
@@ -607,7 +609,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#logging">Logging</a>
 <ul class="sectlevel2">
-<li><a href="#migration-path-5">Migration Path</a></li>
+<li><a href="#migration-path-6">Migration Path</a></li>
 <li><a href="#open-issues-11">Open Issues</a></li>
 </ul>
 </li>
@@ -926,6 +928,23 @@ migrations for NodeJS applications.</p>
 </div>
 </div>
 <div class="sect2">
+<h3 id="migration-path-2">Migration Path</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make sure the Liquibase/Flyway scripts are found in the location expected by the DB migration step tool</p>
+</li>
+<li>
+<p>If the paths are different for certain technology stacks, those paths could be supported as legacy locations (together
+with a warning that the scripts are legacy and that they should be moved to the officially supported location)</p>
+</li>
+<li>
+<p>Adapt the existing microservices to comply to the standard</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
 <h3 id="open-issues-2">Open Issues</h3>
 <div class="ulist">
 <ul>
@@ -1064,7 +1083,27 @@ the Spring Cloud Kubernetes incubation project can be used out of the box or whe
 tweaked further.</p>
 </div>
 <div class="paragraph">
-<p>Assumption:</p>
+<p>Architecture in this context means, how multi-tenancy support is established on top of a Kubernetes cluster.
+It does not cover how Kubernetes is operated on a cloud or on-premise and how different clusters are connected to
+each other.</p>
+</div>
+<div class="paragraph">
+<p>There are a lot of options to support multi-tenancy on top of Kubernetes. Each brings its own complexity to the table.
+The goal is to keep it as simple as possible while still meeting the basic security credentials.</p>
+</div>
+<div class="sect2">
+<h3 id="multi-tenancy">Multi Tenancy</h3>
+<div class="paragraph">
+<p>The system architecture is to support multiple tenants, working independently on microservices and independently
+releasing those microervices on top of the platform.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/K8sArchitecture.png" alt="Kubernetes Architecture">
+</div>
+</div>
+<div class="paragraph">
+<p>The diagram covers the following aspects:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1075,27 +1114,21 @@ tweaked further.</p>
 <p>One or more environments in one K8s cluster (K8s cluster #1: prod, K8s cluster #2: test &amp; staging)</p>
 </li>
 <li>
-<p>Multiple clusters communicating with each other (Microservice dependencies from one cluster into another)</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Using Ingress</p>
+<p>Multiple clusters communicating with each other via API gateways</p>
 </li>
 <li>
-<p>or API Gateways from the cloud</p>
+<p>Multiple tenants are deploy their microservices in the same namespace</p>
+</li>
+<li>
+<p>Istio makes sure that only allowed connections in one namespace are established</p>
 </li>
 </ul>
 </div>
-</li>
-<li>
-<p>Using Istio to prevent microservices from calling each other inside one cluster</p>
-</li>
-</ul>
 </div>
 <div class="sect2">
 <h3 id="open-issues-4">Open Issues</h3>
 <div class="paragraph">
-<p>TODO: &#8230;&#8203;.</p>
+<p>Currently there are no known open issues.</p>
 </div>
 </div>
 </div>
@@ -1225,7 +1258,7 @@ already takes properties out of the process' system environment.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="migration-path-2">Migration Path</h3>
+<h3 id="migration-path-3">Migration Path</h3>
 <div class="paragraph">
 <p>The migration process</p>
 </div>
@@ -1304,7 +1337,7 @@ pods. Combined with KubeDNS, the microservice can be reached by its name, withou
 library.</p>
 </div>
 <div class="sect2">
-<h3 id="migration-path-3">Migration Path</h3>
+<h3 id="migration-path-4">Migration Path</h3>
 <div class="paragraph">
 <p>Switching from Netflix Eureka based service discovery to the Kubernetes is a multi-stage process as it is impossible
 in a larger microservice setup to migrate all microservices in one step.</p>
@@ -1492,7 +1525,7 @@ load-balancing available to all types of applications, not only Java based Sprin
 Boot application perspective, the Ribbon library can be dropped completely.</p>
 </div>
 <div class="sect2">
-<h3 id="migration-path-4">Migration Path</h3>
+<h3 id="migration-path-5">Migration Path</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1638,7 +1671,7 @@ Each log type needs an explicit field 'type' to let the forwarder (Fluentd or Lo
 in Elasticsearch for example.</p>
 </div>
 <div class="sect2">
-<h3 id="migration-path-5">Migration Path</h3>
+<h3 id="migration-path-6">Migration Path</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
