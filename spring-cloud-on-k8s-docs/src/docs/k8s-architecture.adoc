@@ -1,16 +1,30 @@
-== Kubernetes Architecture ==
+== Kubernetes Architecture
+ifndef::imagesdir[:imagesdir: images]
+
 The Kubernetes platform architecture significantly influences how Spring Cloud works on Kubernetes and whether
 the Spring Cloud Kubernetes incubation project can be used out of the box or whether this implementation must be
 tweaked further.
 
-Assumption:
+Architecture in this context means, how multi-tenancy support is established on top of a Kubernetes cluster.
+It does not cover how Kubernetes is operated on a cloud or on-premise and how different clusters are connected to
+each other.
+
+There are a lot of options to support multi-tenancy on top of Kubernetes. Each brings its own complexity to the table.
+The goal is to keep it as simple as possible while still meeting the basic security credentials.
+
+=== Multi Tenancy
+The system architecture is to support multiple tenants, working independently on microservices and independently
+releasing those microervices on top of the platform.
+
+image::K8sArchitecture.png[Kubernetes Architecture]
+
+The diagram covers the following aspects:
 
 * Namespaces per environment (test, staging, prod, ...)
 * One or more environments in one K8s cluster (K8s cluster #1: prod, K8s cluster #2: test & staging)
-* Multiple clusters communicating with each other (Microservice dependencies from one cluster into another)
-** Using Ingress
-** or API Gateways from the cloud
-* Using Istio to prevent microservices from calling each other inside one cluster
+* Multiple clusters communicating with each other via API gateways
+* Multiple tenants are deploy their microservices in the same namespace
+* Istio makes sure that only allowed connections in one namespace are established
 
 === Open Issues
-TODO: ....
+Currently there are no known open issues.

@@ -20,9 +20,17 @@ sub-folder could be added "db/migrations/nodejs" where the NodeJS toolchain find
 migrations for NodeJS applications.
 
 
+=== Migration Path
+
+. Make sure the Liquibase/Flyway scripts are found in the location expected by the DB migration step tool
+. If the paths are different for certain technology stacks, those paths could be supported as legacy locations (together
+with a warning that the scripts are legacy and that they should be moved to the officially supported location)
+. Adapt the existing microservices to comply to the standard
+
+
 === Open Issues
 * How to deal with different database connection strings? This is already solved when a Spring Boot application is used
 There are drawbacks with using the same database configuration for doing database migrations, as the connection
 properties not always fit to long running requests, e.g. the connection timeout for normal application queries
 is usually different than that of long running database migration scripts, which could easily take several hours to
-complete. 
+complete.
