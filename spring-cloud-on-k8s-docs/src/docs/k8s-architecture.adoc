@@ -26,5 +26,10 @@ The diagram covers the following aspects:
 * Multiple tenants are deploy their microservices in the same namespace
 * Istio makes sure that only allowed connections in one namespace are established
 
+=== Meta Environment
+In a microservices world there are certain aspects that live outside of any of the environments where access to
+all other environments is required. For example Elasticsearch and Kibana collect data from all environments.
+Or a Prometheus server that has access to all microservices and middleware components in the different environments.
+
 === Open Issues
 Currently there are no known open issues.

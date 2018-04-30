@@ -1,5 +1,6 @@
 == Administration
 There are several tools for administrative access, like the Spring Boot Admin tool for example.
+Some of those tools live in the meta-environment as they need access to all other environments.
 
 === Open Issues
 

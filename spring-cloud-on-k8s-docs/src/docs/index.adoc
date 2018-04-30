@@ -2,6 +2,9 @@
 Michael Rumpf <michael _at_ rumpfonline.de>
 v0.1, 2018
 
+WARNING: This documentation is work in progress. Many of the concepts need to be refined and validated by implementing
+them in microservices.
+
 ifndef::imagesdir[:imagesdir: images]
 
 include::overview.adoc[]

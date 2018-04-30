@@ -1,30 +1,49 @@
 == Monitoring ==
 
+
 === Prometheus ===
 
 There are plugins to automatically detect new services, deployed on Kubernetes and change the configuration to start scraping the metrics endpoints.
 
 Prerequisite: Spring Boot 2.0 with Micrometer
 
+TODO: ....
+
+==== Migration Steps
+
 
 === OpenTracing ===
-TODO: Istio also supports OpenTracing!
+The http://opentracing.io/[OpenTracing] initiative aims at removing the vendor lock in distributed tracing.
+OpenTracing is a standard for distributed tracing which is implemented by many different frameworks and tools.
 
-JaegerTracing: https://www.jaegertracing.io/
-
-Support for all relevant technology stacks!
-
-The challenge is that with each requests a set of headers "X-b3-..." (Zipkin only?) are propagated between the microservices.
-Those properties need to be added to the thread context and sent out to any downstream services.
-
-https://www.jaegertracing.io/docs/client-libraries/
+A good description of why https://www.jaegertracing.io/[JaegerTracing] was created can be found in this
+https://eng.uber.com/distributed-tracing/[blog]. JaegerTracing supports
+https://www.jaegertracing.io/docs/client-libraries/[client libraries] in many different languages:
 
 * Go
 * Java
-* Node.js
+* JavaScript
 * Python
 * C++
 * C#
+
+Besides the basic client libraries, support for OpenTracing has been added into many tools and frameworks:
+
+* https://github.com/opentracing-contrib/javascript-express[Express (NodeJS)]
+* https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/tracing.html?highlight=opentracing[Envoy proxy (Istio)]
+* https://github.com/opentracing-contrib/java-apache-httpclient[Apache HttpClient]
+* https://github.com/opentracing-contrib/java-jdbc[PostgreSQL]
+* https://github.com/opentracing-contrib/java-spring-cloud[Spring Cloud]
+* https://github.com/opentracing-contrib/java-hazelcast[Hazelcast]
+* https://github.com/opentracing-contrib/java-spring-web[Spring Web]
+* https://github.com/opentracing-contrib/java-metrics[Java]
+* https://github.com/opentracing-contrib/java-spring-messaging[Spring Messaging]
+* https://github.com/opentracing-contrib/java-rabbitmq-client[Rabbit MQ]
+* https://github.com/opentracing-contrib/java-grpc[gRPC]
+
+==== Migration Steps
+...
+
 
 === Open Issues
 TODO

@@ -1,18 +1,41 @@
 == Circuit Breaker ==
+A circuit breaker is a distributed systems pattern, introduced in the book "Release It!" by Michael Nygard.
+When Netflix released Hystrix, an open-source implementation of the circuit breaker pattern in Java, and with
+the rise of microservices, the topic became adopted widely. Unfortunately Hystrix is a Java only solution.
+It can be used in any Java application, but especially in Spring Cloud applications, using Hystrix, becomes very easy.
 
-TODO:
+With Istio the circuit breaker idea is moved from the application layer to the platform layer, making it
+available to non-Java applications.
 
-* Get rid of Hystrix and turn to Istio for this purpose
-* But what about the monitoring functionality that was possible with the Hstrix Dashboard?
+=== Monitoring
+With the Hystrix streams and the Hystrix dashboard, a nice user-interface is available to help analyzing
+the behavior of all the circuits in a system. The disadvantages of Hystrix are mostly on the monitoring side.
 
-Idea:
+One issue is the 2min rolling window until the data is  dropped again. In distributed systems with varying load
+scenarios, it is necessary to send the Hystrix stream to an Elasticsearch server,
+making the data available over a longer period of time. The Hystrix stream is not a valid JSON (i.e. a stream) so that
+custom implementation logic is necessary to write valid JSON entries into a log file, before feeding it via Logstash
+to the Elasticsearch server.
 
-* Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
-of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by
+The second issue is with the Hystrix dashboard. Having the Hystrix dashboard connected
+to the Turbine stream of a complex microservices application, crashes the new Firefox browser deterministically.
+Making views of single circuit breakers or all circuit breakers from all instances of one microservice available
+is a must in order to tell what the circuit is doing.
 
-Comparison of Hystrix and Istio
-http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/
+
+=== Migration Path
+
+. Convert the Hystrix timeout settings to an Istio configuration
+. Turn on circuit breaking on the Istio side
+. Turn off circuit breaker logic in Spring Boot applications
 
 
 === Open Issues
-TODO: See https://github.com/fabric8io/kubeflix[Kubeflix]
+
+* See https://github.com/fabric8io/kubeflix[Kubeflix] for the Turbine integration into Kubernetes
+* How to convert Hystrix configuration to Istio? +
+http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/
+* Metrics/Dashboard replacement when using Istio? +
+https://github.com/christian-posta/envoy-microservices-patterns/issues/2
+* Can we run Hystrix and Istio circuit breaker at the same time?
+* How to show a combined view of circuit breaker metrics/statistics from multiple instances of the same microservice?

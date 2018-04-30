@@ -563,6 +563,7 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#kubernetes-architecture">Kubernetes Architecture</a>
 <ul class="sectlevel2">
 <li><a href="#multi-tenancy">Multi Tenancy</a></li>
+<li><a href="#meta-environment">Meta Environment</a></li>
 <li><a href="#open-issues-4">Open Issues</a></li>
 </ul>
 </li>
@@ -593,6 +594,8 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#circuit-breaker">Circuit Breaker</a>
 <ul class="sectlevel2">
+<li><a href="#monitoring">Monitoring</a></li>
+<li><a href="#migration-path-6">Migration Path</a></li>
 <li><a href="#open-issues-8">Open Issues</a></li>
 </ul>
 </li>
@@ -609,11 +612,11 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#logging">Logging</a>
 <ul class="sectlevel2">
-<li><a href="#migration-path-6">Migration Path</a></li>
+<li><a href="#migration-path-7">Migration Path</a></li>
 <li><a href="#open-issues-11">Open Issues</a></li>
 </ul>
 </li>
-<li><a href="#monitoring">Monitoring</a>
+<li><a href="#monitoring-2">Monitoring</a>
 <ul class="sectlevel2">
 <li><a href="#prometheus">Prometheus</a></li>
 <li><a href="#opentracing">OpenTracing</a></li>
@@ -634,6 +637,23 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+This documentation is work in progress. Many of the concepts need to be refined and validated by implementing
+them in microservices.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 <div class="sect1">
 <h2 id="overview">Overview</h2>
 <div class="sectionbody">
@@ -1008,6 +1028,16 @@ downtime of the distributed system.</p>
 <ul>
 <li>
 <p>Jenkins X</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="http://jenkins-x.io/developing/create-spring/" class="bare">http://jenkins-x.io/developing/create-spring/</a></p>
+</li>
+<li>
+<p>Uses Helm and Draft for Jenkins X</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>Spinnaker</p>
@@ -1048,7 +1078,17 @@ downtime of the distributed system.</p>
 <div class="ulist">
 <ul>
 <li>
+<p>Tools to build applications for deployment on K8s</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Skaffold: <a href="https://github.com/GoogleContainerTools/skaffold" class="bare">https://github.com/GoogleContainerTools/skaffold</a></p>
+</li>
+<li>
 <p>Draft: <a href="https://github.com/Azure/draft" class="bare">https://github.com/Azure/draft</a></p>
+</li>
+</ul>
+</div>
 </li>
 <li>
 <p>Might Forge be an option: <a href="https://forge.sh/?" class="bare">https://forge.sh/?</a></p>
@@ -1123,6 +1163,14 @@ releasing those microervices on top of the platform.</p>
 <p>Istio makes sure that only allowed connections in one namespace are established</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="meta-environment">Meta Environment</h3>
+<div class="paragraph">
+<p>In a microservices world there are certain aspects that live outside of any of the environments where access to
+all other environments is required. For example Elasticsearch and Kibana collect data from all environments.
+Or a Prometheus server that has access to all microservices and middleware components in the different environments.</p>
 </div>
 </div>
 <div class="sect2">
@@ -1566,37 +1614,73 @@ Boot application perspective, the Ribbon library can be dropped completely.</p>
 <h2 id="circuit-breaker">Circuit Breaker</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Get rid of Hystrix and turn to Istio for this purpose</p>
-</li>
-<li>
-<p>But what about the monitoring functionality that was possible with the Hstrix Dashboard?</p>
-</li>
-</ul>
+<p>A circuit breaker is a distributed systems pattern, introduced in the book "Release It!" by Michael Nygard.
+When Netflix released Hystrix, an open-source implementation of the circuit breaker pattern in Java, and with
+the rise of microservices, the topic became adopted widely. Unfortunately Hystrix is a Java only solution.
+It can be used in any Java application, but especially in Spring Cloud applications, using Hystrix, becomes very easy.</p>
 </div>
 <div class="paragraph">
-<p>Idea:</p>
+<p>With Istio the circuit breaker idea is moved from the application layer to the platform layer, making it
+available to non-Java applications.</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>Make sure that Istio Circuit Breaker has a good Prometheus support so that the common way
-of feeding the JSON data from the Hystrix Stream into Elasticsearch can be replaced by</p>
-</li>
-</ul>
+<div class="sect2">
+<h3 id="monitoring">Monitoring</h3>
+<div class="paragraph">
+<p>With the Hystrix streams and the Hystrix dashboard, a nice user-interface is available to help analyzing
+the behavior of all the circuits in a system. The disadvantages of Hystrix are mostly on the monitoring side.</p>
 </div>
 <div class="paragraph">
-<p>Comparison of Hystrix and Istio
-<a href="http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/" class="bare">http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/</a></p>
+<p>One issue is the 2min rolling window until the data is  dropped again. In distributed systems with varying load
+scenarios, it is necessary to send the Hystrix stream to an Elasticsearch server,
+making the data available over a longer period of time. The Hystrix stream is not a valid JSON (i.e. a stream) so that
+custom implementation logic is necessary to write valid JSON entries into a log file, before feeding it via Logstash
+to the Elasticsearch server.</p>
+</div>
+<div class="paragraph">
+<p>The second issue is with the Hystrix dashboard. Having the Hystrix dashboard connected
+to the Turbine stream of a complex microservices application, crashes the new Firefox browser deterministically.
+Making views of single circuit breakers or all circuit breakers from all instances of one microservice available
+is a must in order to tell what the circuit is doing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="migration-path-6">Migration Path</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Convert the Hystrix timeout settings to an Istio configuration</p>
+</li>
+<li>
+<p>Turn on circuit breaking on the Istio side</p>
+</li>
+<li>
+<p>Turn off circuit breaker logic in Spring Boot applications</p>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect2">
 <h3 id="open-issues-8">Open Issues</h3>
-<div class="paragraph">
-<p>TODO: See <a href="https://github.com/fabric8io/kubeflix">Kubeflix</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>See <a href="https://github.com/fabric8io/kubeflix">Kubeflix</a> for the Turbine integration into Kubernetes</p>
+</li>
+<li>
+<p>How to convert Hystrix configuration to Istio?<br>
+<a href="http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/" class="bare">http://blog.christianposta.com/microservices/comparing-envoy-and-istio-circuit-breaking-with-netflix-hystrix/</a></p>
+</li>
+<li>
+<p>Metrics/Dashboard replacement when using Istio?<br>
+<a href="https://github.com/christian-posta/envoy-microservices-patterns/issues/2" class="bare">https://github.com/christian-posta/envoy-microservices-patterns/issues/2</a></p>
+</li>
+<li>
+<p>Can we run Hystrix and Istio circuit breaker at the same time?</p>
+</li>
+<li>
+<p>How to show a combined view of circuit breaker metrics/statistics from multiple instances of the same microservice?</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1638,8 +1722,17 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <h2 id="testing">Testing</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>TODO:
-* Telepresence: <a href="https://www.telepresence.io/" class="bare">https://www.telepresence.io/</a></p>
+<p>TODO:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Telepresence: <a href="https://www.telepresence.io/" class="bare">https://www.telepresence.io/</a></p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
+</ul>
 </div>
 </div>
 </div>
@@ -1647,7 +1740,8 @@ of feeding the JSON data from the Hystrix Stream into Elasticsearch can be repla
 <h2 id="administration">Administration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>There are several tools for administrative access, like the Spring Boot Admin tool for example.</p>
+<p>There are several tools for administrative access, like the Spring Boot Admin tool for example.
+Some of those tools live in the meta-environment as they need access to all other environments.</p>
 </div>
 <div class="sect2">
 <h3 id="open-issues-10">Open Issues</h3>
@@ -1671,7 +1765,7 @@ Each log type needs an explicit field 'type' to let the forwarder (Fluentd or Lo
 in Elasticsearch for example.</p>
 </div>
 <div class="sect2">
-<h3 id="migration-path-6">Migration Path</h3>
+<h3 id="migration-path-7">Migration Path</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1695,7 +1789,7 @@ in Elasticsearch for example.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="monitoring">Monitoring</h2>
+<h2 id="monitoring-2">Monitoring</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="prometheus">Prometheus</h3>
@@ -1705,24 +1799,24 @@ in Elasticsearch for example.</p>
 <div class="paragraph">
 <p>Prerequisite: Spring Boot 2.0 with Micrometer</p>
 </div>
+<div class="paragraph">
+<p>TODO: &#8230;&#8203;.</p>
+</div>
+<div class="sect3">
+<h4 id="migration-steps-2">Migration Steps</h4>
+
+</div>
 </div>
 <div class="sect2">
 <h3 id="opentracing">OpenTracing</h3>
 <div class="paragraph">
-<p>TODO: Istio also supports OpenTracing!</p>
+<p>The <a href="http://opentracing.io/">OpenTracing</a> initiative aims at removing the vendor lock in distributed tracing.
+OpenTracing is a standard for distributed tracing which is implemented by many different frameworks and tools.</p>
 </div>
 <div class="paragraph">
-<p>JaegerTracing: <a href="https://www.jaegertracing.io/" class="bare">https://www.jaegertracing.io/</a></p>
-</div>
-<div class="paragraph">
-<p>Support for all relevant technology stacks!</p>
-</div>
-<div class="paragraph">
-<p>The challenge is that with each requests a set of headers "X-b3-&#8230;&#8203;" (Zipkin only?) are propagated between the microservices.
-Those properties need to be added to the thread context and sent out to any downstream services.</p>
-</div>
-<div class="paragraph">
-<p><a href="https://www.jaegertracing.io/docs/client-libraries/" class="bare">https://www.jaegertracing.io/docs/client-libraries/</a></p>
+<p>A good description of why <a href="https://www.jaegertracing.io/">JaegerTracing</a> was created can be found in this
+<a href="https://eng.uber.com/distributed-tracing/">blog</a>. JaegerTracing supports
+<a href="https://www.jaegertracing.io/docs/client-libraries/">client libraries</a> in many different languages:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1733,7 +1827,7 @@ Those properties need to be added to the thread context and sent out to any down
 <p>Java</p>
 </li>
 <li>
-<p>Node.js</p>
+<p>JavaScript</p>
 </li>
 <li>
 <p>Python</p>
@@ -1745,6 +1839,52 @@ Those properties need to be added to the thread context and sent out to any down
 <p>C#</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>Besides the basic client libraries, support for OpenTracing has been added into many tools and frameworks:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/opentracing-contrib/javascript-express">Express (NodeJS)</a></p>
+</li>
+<li>
+<p><a href="https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/tracing.html?highlight=opentracing">Envoy proxy (Istio)</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-apache-httpclient">Apache HttpClient</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-jdbc">PostgreSQL</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-spring-cloud">Spring Cloud</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-hazelcast">Hazelcast</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-spring-web">Spring Web</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-metrics">Java</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-spring-messaging">Spring Messaging</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-rabbitmq-client">Rabbit MQ</a></p>
+</li>
+<li>
+<p><a href="https://github.com/opentracing-contrib/java-grpc">gRPC</a></p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="migration-steps-3">Migration Steps</h4>
+<div class="paragraph">
+<p>&#8230;&#8203;</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1927,6 +2067,19 @@ platform as a service on top of Kubernetes:</p>
 </ul>
 </div>
 </li>
+<li>
+<p>Function as a Service</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://kubeless.io/" class="bare">https://kubeless.io/</a></p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+</li>
 </ul>
 </div>
 </div>
@@ -1936,7 +2089,7 @@ platform as a service on top of Kubernetes:</p>
 <div id="footer">
 <div id="footer-text">
 Version 0.1<br>
-Last updated 2018-04-30 15:41:15 CEST
+Last updated 2018-04-30 17:31:43 CEST
 </div>
 </div>
 </body>

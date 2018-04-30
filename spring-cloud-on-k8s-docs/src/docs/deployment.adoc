@@ -17,6 +17,8 @@ downtime of the distributed system.
 TODO
 
 * Jenkins X
+** http://jenkins-x.io/developing/create-spring/
+** Uses Helm and Draft for Jenkins X
 * Spinnaker
 
 
@@ -35,7 +37,9 @@ See chapter <<Configuration>> for details on how a configuration change is deplo
 === Open Issues
 TODO:
 
-* Draft: https://github.com/Azure/draft
+* Tools to build applications for deployment on K8s
+** Skaffold: https://github.com/GoogleContainerTools/skaffold
+** Draft: https://github.com/Azure/draft
 * Might Forge be an option: https://forge.sh/?
 * Which tools to implement the deployment process?
 ** Jenkins X
