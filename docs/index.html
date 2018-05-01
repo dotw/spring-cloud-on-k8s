@@ -872,6 +872,9 @@ a special readiness implementation it could override the <code>ReadinessIndicato
 on top of it. It must be possible to trigger this process outside of the application deployment or release process to
 be able to update the application images by using a new Java base images in case of any security issues.</p>
 </div>
+<div class="paragraph">
+<p>TODO: See Helm and Draft on how to build K8s packages</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="open-issues">Open Issues</h3>
@@ -902,7 +905,7 @@ for both, readiness and liveness.</p>
 </div>
 </li>
 <li>
-<p>Exact definition of the build process</p>
+<p>Exact definition of the build process &#8658; Use helm.sh and draft.sh for deploying applications</p>
 </li>
 <li>
 <p>How to make sure that microservices can easily be used locally without forcing them to run minikube</p>
@@ -1022,10 +1025,33 @@ downtime of the distributed system.</p>
 <div class="sect2">
 <h3 id="deployment-process-tooling">Deployment Process &amp; Tooling</h3>
 <div class="paragraph">
-<p>TODO</p>
+<p>The deployment process makes use of the following tools:</p>
 </div>
 <div class="ulist">
 <ul>
+<li>
+<p><a href="https://helm.sh/">Helm</a>&#8201;&#8212;&#8201;Kubernetes Package Manager</p>
+</li>
+<li>
+<p><a href="https://draft.sh/">Draft</a>&#8201;&#8212;&#8201;Buildpacks (known from Heroku)</p>
+</li>
+<li>
+<p>CI/CD&#8201;&#8212;&#8201;TODO: Jenkins (X) or Spinnaker?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Spinnaker&#8201;&#8212;&#8201;<a href="https://www.spinnaker.io/" class="bare">https://www.spinnaker.io/</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Chaos Monkey integration</p>
+</li>
+<li>
+<p>&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+</li>
 <li>
 <p>Jenkins X</p>
 <div class="ulist">
@@ -1039,8 +1065,18 @@ downtime of the distributed system.</p>
 </ul>
 </div>
 </li>
+</ul>
+</div>
+</li>
 <li>
-<p>Spinnaker</p>
+<p><a href="https://kubeapps.com/">Kubeapps</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>This a kind of self service marketplace for Kubernetes</p>
+</li>
+</ul>
+</div>
 </li>
 </ul>
 </div>

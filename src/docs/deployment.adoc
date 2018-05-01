@@ -14,13 +14,19 @@ downtime of the distributed system.
 * Backwards compatibility of API changes, i.e. no breaking changes
 
 === Deployment Process & Tooling
-TODO
+The deployment process makes use of the following tools:
 
-* Jenkins X
-** http://jenkins-x.io/developing/create-spring/
-** Uses Helm and Draft for Jenkins X
-* Spinnaker
-
+* https://helm.sh/[Helm] -- Kubernetes Package Manager
+* https://draft.sh/[Draft] -- Buildpacks (known from Heroku)
+* CI/CD -- TODO: Jenkins (X) or Spinnaker?
+** Spinnaker -- https://www.spinnaker.io/
+*** Chaos Monkey integration
+*** ...
+** Jenkins X
+*** http://jenkins-x.io/developing/create-spring/
+*** Uses Helm and Draft for Jenkins X
+* https://kubeapps.com/[Kubeapps]
+** This a kind of self service marketplace for Kubernetes
 
 === Deployment of a microservice
 TODO

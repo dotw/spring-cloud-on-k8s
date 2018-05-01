@@ -85,6 +85,8 @@ The build process takes the latest available Java Docker base image and creates 
 on top of it. It must be possible to trigger this process outside of the application deployment or release process to
 be able to update the application images by using a new Java base images in case of any security issues.
 
+TODO: See Helm and Draft on how to build K8s packages
+
 
 === Open Issues ===
 The following issues need to be clarified in the context of Containerization:
@@ -96,5 +98,5 @@ The following issues need to be clarified in the context of Containerization:
 extra endpoint because the service might be operational, i.e. live, but not ready yet.
 ** Do we need an additional readiness check in Spring Boot Actuator? The Blogpost from above uses the health endpoint
 for both, readiness and liveness.
-* Exact definition of the build process
+* Exact definition of the build process => Use helm.sh and draft.sh for deploying applications
 * How to make sure that microservices can easily be used locally without forcing them to run minikube
