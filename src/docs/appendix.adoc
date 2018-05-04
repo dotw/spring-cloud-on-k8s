@@ -3,5 +3,4 @@ ifndef::imagesdir[:imagesdir: images]
 
 include::kubernetes.adoc[]
 
-
-
+include::draft.adoc[]

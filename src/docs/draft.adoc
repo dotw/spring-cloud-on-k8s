@@ -1,0 +1,28 @@
+=== Draft
+The https://draft.sh/[Draft] toolchain is similar to the Heroku Buildpacks, which detect the technology stack and create
+the deployment, based upon the detection result. The generated Docker container runs a `mvn clean package` prior to
+starting the packaged Java application.
+That and the design documentation states clearly that Draft aims at the inner circle of the developer workflow and is
+not intended for production usage. Production usage is left to Helm, which covers all the important aspects to
+deploy into production clusters: https://docs.helm.sh/chart_best_practices/[The Chart Best Practices Guide].
+
+==== Experience
+
+* Running `draft create` and `draft up` runs a Maven Build in a Docker container: https://github.com/Azure/draft/issues/725
+* This Maven build fails in multi module projects as the default Maven repository is Maven central and
+not all artifacts are present in Maven central. So microservices need to be put int clearly separated Maven
+projects.
+* The documentation suggests to commit the generated Docker file and Helm chart into the Git repository.
+But that would hand over the responsibility to the development team. Instead the `draft create` should be an ephemeral
+step, which will be executed with each deployment. That means the Draft pack repository contains a well curated
+Dockerfile and Helm chart for the Java application.
+* The current Java Helm chart does not take the Docker special configuration of the Java VM into account:
+https://github.com/Azure/draft/issues/724
+
+==== Recommendation
+The tool can be used to deploy local development snapshots into a Kubernetes cluster without having to commit and run
+a full deployment pipeline.
+
+==== References
+* https://ordina-jworks.github.io/docker/2018/02/12/Azure-Draft.html
+* https://docs.helm.sh/chart_best_practices/

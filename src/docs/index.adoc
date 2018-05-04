@@ -5,6 +5,10 @@ v0.1, 2018
 WARNING: This documentation is work in progress. Many of the concepts need to be refined and validated by implementing
 them in microservices.
 
+NOTE: Some of the topics in the document are very opinionated by former projects where I was working on.
+All topics are validated against a fork of the
+https://github.com/mrumpf/spring-petclinic-microservices[spring-petclinic-microservices] project.
+
 ifndef::imagesdir[:imagesdir: images]
 
 include::overview.adoc[]

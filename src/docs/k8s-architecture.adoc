@@ -20,11 +20,13 @@ image::K8sArchitecture.png[Kubernetes Architecture]
 
 The diagram covers the following aspects:
 
-* Namespaces per environment (test, staging, prod, ...)
 * One or more environments in one K8s cluster (K8s cluster #1: prod, K8s cluster #2: test & staging)
+* Namespaces per environment (test, staging, prod, ...)
+* A separate network per environment to make sure that there are no accidental connections (e.g. Hazelcast multicast)
 * Multiple clusters communicating with each other via API gateways
 * Multiple tenants are deploy their microservices in the same namespace
 * Istio makes sure that only allowed connections in one namespace are established
+
 
 === Meta Environment
 In a microservices world there are certain aspects that live outside of any of the environments where access to

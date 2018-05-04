@@ -18,7 +18,7 @@ The following stacks are quite popular in the enterprise world today:
 * .NET
 * ...
 
-For those common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
+For the most common technology stacks, the platform must provide a DevOps experience where it is easy to deploy new
 business functionality into production without the need to deal with low-level Docker or Kubernetes.
 
 
@@ -43,7 +43,7 @@ file as an example for which aspects of an application must be configurable.
 
 
 === Conventions ===
-With Docker the TCP port of a microservice is not an issue to be discovered anymore (see chapter on containerization).
+With Docker the TCP port of a microservice is not an issue to be discovered anymore.
 By using conventions, each microservice starts its HTTP endpoint at port 80, its HTTPS port at 443, and if
 Hazelcast is involved, the Hazelcast cluster port 5701 will be used. Each application lives in a different
 container and thus can use the full range of TCP ports.
@@ -74,21 +74,46 @@ One possibility to implement this would be to provide a different endpoint, e.g.
 HealthIndicator as a default, which is also executed by the `/health` endpoint. When an application has the need for
 a special readiness implementation it could override the `ReadinessIndicator` and implement a custom logic there.
 
+NOTE: There is a Blog that covers running Spring Boot applications at scale on Kubernetes from
+https://engineering.squarespace.com/blog/2017/understanding-linux-container-scheduling[squarespace] and a video from
+https://www.youtube.com/watch?v=oHrcWU9Tyz4&t=0m0s[KubeCon North America 2017].
 
 ==== WebSphere Liberty profile (Jakarta EE) ====
 For WebSphere liberty profile there are pre-built images available from IBM, see
 https://store.docker.com/images/websphere-liberty[IBM WebSphere Application Server Liberty] on Docker Hub.
 
+=== Database
+Many microservices have their own database. The database is hosted in the cloud, i.e. a managed database
+service is used.
 
-=== Build Process ===
+
+=== Build Process
 The build process takes the latest available Java Docker base image and creates an application specific image
 on top of it. It must be possible to trigger this process outside of the application deployment or release process to
 be able to update the application images by using a new Java base images in case of any security issues.
 
-TODO: See Helm and Draft on how to build K8s packages
+Technology specific Helm charts must be created for this purpose.
+The Docker image build process could be like this:
 
+. The application build deploys the deployment artifact into the Maven artifact repository
+. The next deployment pipeline step takes this artifact either from the Maven artifact repository
+or from the workspace of the previous build step and puts it into the Docker image
+. The Docker image is pushed into the Docker registry
 
-=== Open Issues ===
+TODO: Refine further
+
+=== Helm Charts
+
+* Repositories
+** https://github.com/kubernetes/charts[Kubernetes Helm Charts]:
+** https://fabric8.io/helm/[Fabric 8 Chart Repository]
+** https://github.com/IBM/charts[IBM Cloud Charts Helm Repository]
+* Spring Boot
+** https://github.com/binblee/springboot-helm-chart
+* WebSphere Liberty
+** https://github.com/IBM/charts/tree/master/stable/ibm-websphere-liberty
+
+=== Open Issues
 The following issues need to be clarified in the context of Containerization:
 
 *  Configuring the Readiness and Liveness probes
@@ -100,3 +125,7 @@ extra endpoint because the service might be operational, i.e. live, but not read
 for both, readiness and liveness.
 * Exact definition of the build process => Use helm.sh and draft.sh for deploying applications
 * How to make sure that microservices can easily be used locally without forcing them to run minikube
+* Does the local (developer) workflow also use managed cloud services (database, rabbitmq, ...)?
+* In Helm there is a way to override values (values.yml) which are defined, by the Helm template files. The question
+is how do we feed the values.yml file to the build/deployment process?
+* How to provision cloud managed services? Open Service Broker API?

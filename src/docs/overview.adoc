@@ -32,5 +32,5 @@ Java only feels like a misfit, especially to those that started the journey towa
 all kind of applications, including legacy applications / not cloud-native.
 
 This documentation depicts a migration path from the pure Java to a polyglot application world where many
-of the Netflix OSS features are provided by the platform. A huge benefit would be that platform aspects
+of the Netflix OSS features are provided by the platform. A huge benefit would be that the platform aspects
 can be removed from application code, leading to cleaner and easier to maintain codebase.
